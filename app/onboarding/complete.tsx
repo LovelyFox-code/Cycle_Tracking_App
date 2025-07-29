@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CircleCheck as CheckCircle, ArrowRight } from 'lucide-react-native';
@@ -15,9 +21,15 @@ export default function CompleteScreen() {
 
   const saveOnboardingData = async () => {
     const userData = {
+      name: 'Alina', // Adding a default name
       lastPeriodDate: params.lastPeriodDate,
-      cycleLength: parseInt(params.cycleLength),
-      goals: typeof params.goals === 'string' ? [params.goals] : params.goals || [],
+      cycleLength: parseInt(
+        Array.isArray(params.cycleLength)
+          ? params.cycleLength[0]
+          : params.cycleLength
+      ),
+      goals:
+        typeof params.goals === 'string' ? [params.goals] : params.goals || [],
       totalPoints: 0,
       createdAt: new Date().toISOString(),
       completedTasks: {},
@@ -32,11 +44,11 @@ export default function CompleteScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#FFE5E5', '#FAFAFA']}
-        style={styles.background}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <LinearGradient colors={['#FFE5E5', '#FAFAFA']} style={styles.background}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
             {/* Success Icon */}
             <View style={styles.iconContainer}>
@@ -55,9 +67,9 @@ export default function CompleteScreen() {
                 Welcome to your personalized wellness journey with CycleSync
               </Text>
               <Text style={styles.description}>
-                We've created a customized experience based on your cycle and goals. 
-                You'll receive daily recommendations that adapt to your menstrual phase, 
-                helping you optimize your wellness routine.
+                We've created a customized experience based on your cycle and
+                goals. You'll receive daily recommendations that adapt to your
+                menstrual phase, helping you optimize your wellness routine.
               </Text>
             </View>
 
@@ -69,31 +81,42 @@ export default function CompleteScreen() {
                   <View style={styles.stepNumber}>
                     <Text style={styles.stepNumberText}>1</Text>
                   </View>
-                  <Text style={styles.stepText}>Get daily personalized recommendations</Text>
+                  <Text style={styles.stepText}>
+                    Get daily personalized recommendations
+                  </Text>
                 </View>
                 <View style={styles.step}>
                   <View style={styles.stepNumber}>
                     <Text style={styles.stepNumberText}>2</Text>
                   </View>
-                  <Text style={styles.stepText}>Complete tasks to earn points and level up</Text>
+                  <Text style={styles.stepText}>
+                    Complete tasks to earn points and level up
+                  </Text>
                 </View>
                 <View style={styles.step}>
                   <View style={styles.stepNumber}>
                     <Text style={styles.stepNumberText}>3</Text>
                   </View>
-                  <Text style={styles.stepText}>Track your cycle and discover patterns</Text>
+                  <Text style={styles.stepText}>
+                    Track your cycle and discover patterns
+                  </Text>
                 </View>
                 <View style={styles.step}>
                   <View style={styles.stepNumber}>
                     <Text style={styles.stepNumberText}>4</Text>
                   </View>
-                  <Text style={styles.stepText}>Unlock achievements as you progress</Text>
+                  <Text style={styles.stepText}>
+                    Unlock achievements as you progress
+                  </Text>
                 </View>
               </View>
             </View>
 
             {/* Start Button */}
-            <TouchableOpacity style={styles.startButton} onPress={handleGetStarted}>
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={handleGetStarted}
+            >
               <LinearGradient
                 colors={['#FF6B6B', '#FF8E53']}
                 style={styles.buttonGradient}
@@ -104,7 +127,8 @@ export default function CompleteScreen() {
             </TouchableOpacity>
 
             <Text style={styles.encouragement}>
-              🌸 Remember: Small consistent steps lead to lasting wellness changes
+              🌸 Remember: Small consistent steps lead to lasting wellness
+              changes
             </Text>
           </View>
         </ScrollView>

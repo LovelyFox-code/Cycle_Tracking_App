@@ -1,16 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Heart, Droplets, Sun, Moon, CircleCheck as CheckCircle, Plus } from 'lucide-react-native';
+import {
+  Heart,
+  Droplets,
+  Sun,
+  Moon,
+  CircleCheck as CheckCircle,
+  Plus,
+  Leaf,
+} from 'lucide-react-native';
 import { getUserData, updateUserPoints, completeTask } from '@/utils/storage';
-import { getCurrentPhase, getPhaseInfo, calculateDaysInPhase } from '@/utils/cycleCalculations';
+import {
+  getCurrentPhase,
+  getPhaseInfo,
+  calculateDaysInPhase,
+} from '@/utils/cycleCalculations';
+
+type UserData = {
+  name?: string;
+  lastPeriodDate: string;
+  cycleLength: number;
+  completedTasks?: { [date: string]: string[] };
+  totalPoints?: number;
+};
 
 export default function Dashboard() {
-  const [userData, setUserData] = useState(null);
-  const [currentPhase, setCurrentPhase] = useState(null);
-  const [phaseInfo, setPhaseInfo] = useState(null);
-  const [completedTasks, setCompletedTasks] = useState(new Set());
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [currentPhase, setCurrentPhase] = useState<string | null>(null);
+  const [phaseInfo, setPhaseInfo] = useState<any>(null);
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const [cycleDay, setCycleDay] = useState(1);
+  const [cycleLength, setCycleLength] = useState(28);
 
   useEffect(() => {
     loadUserData();
@@ -23,7 +52,17 @@ export default function Dashboard() {
       const phase = getCurrentPhase(data.lastPeriodDate, data.cycleLength);
       setCurrentPhase(phase);
       setPhaseInfo(getPhaseInfo(phase));
-      
+
+      // Calculate current cycle day
+      const lastPeriod = new Date(data.lastPeriodDate);
+      const currentDate = new Date();
+      const daysSinceLastPeriod = Math.floor(
+        (currentDate.getTime() - lastPeriod.getTime()) / (24 * 60 * 60 * 1000)
+      );
+      const currentCycleDay = (daysSinceLastPeriod % data.cycleLength) + 1;
+      setCycleDay(currentCycleDay);
+      setCycleLength(data.cycleLength);
+
       // Load completed tasks for today
       const today = new Date().toDateString();
       const todayTasks = data.completedTasks?.[today] || [];
@@ -31,7 +70,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleTaskComplete = async (taskType, points) => {
+  const handleTaskComplete = async (taskType: string, points: number) => {
     if (completedTasks.has(taskType)) {
       return;
     }
@@ -42,29 +81,32 @@ export default function Dashboard() {
 
     await completeTask(taskType);
     await updateUserPoints(points);
-    
+
     Alert.alert('Great job!', `You earned ${points} points!`);
     loadUserData(); // Refresh data
   };
 
-  const getPhaseIcon = (phase) => {
+  const getPhaseIcon = (phase: string) => {
     switch (phase) {
-      case 'menstrual': return <Droplets size={24} color="#FF6B6B" />;
-      case 'follicular': return <Sun size={24} color="#FFD93D" />;
-      case 'ovulation': return <Heart size={24} color="#FF1744" />;
-      case 'luteal': return <Moon size={24} color="#8E24AA" />;
-      default: return <Heart size={24} color="#FF6B6B" />;
+      case 'menstrual':
+        return <Droplets size={24} color="#FF6B6B" />;
+      case 'follicular':
+        return <Sun size={24} color="#FFD93D" />;
+      case 'ovulation':
+        return <Heart size={24} color="#FF1744" />;
+      case 'luteal':
+        return <Leaf size={24} color="#8E24AA" />;
+      default:
+        return <Heart size={24} color="#FF6B6B" />;
     }
   };
 
-  const getPhaseGradient = (phase) => {
-    switch (phase) {
-      case 'menstrual': return ['#FFE5E5', '#FFCCCB'];
-      case 'follicular': return ['#FFF9C4', '#FFE082'];
-      case 'ovulation': return ['#FCE4EC', '#F8BBD9'];
-      case 'luteal': return ['#F3E5F5', '#E1BEE7'];
-      default: return ['#FFE5E5', '#FFCCCB'];
-    }
+  const getCycleProgressBarColors = () => {
+    return ['#F9A826', '#FF6B6B', '#4FC3F7', '#8E24AA'];
+  };
+
+  const getCyclePosition = () => {
+    return (cycleDay / cycleLength) * 100;
   };
 
   if (!userData || !currentPhase || !phaseInfo) {
@@ -77,46 +119,99 @@ export default function Dashboard() {
     );
   }
 
-  const daysInPhase = calculateDaysInPhase(userData.lastPeriodDate, userData.cycleLength, currentPhase);
+  const daysInPhase = calculateDaysInPhase(
+    userData.lastPeriodDate,
+    userData.cycleLength,
+    currentPhase
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hello, name!</Text>
+          <Text style={styles.greeting}>
+            Hello, {userData.name || 'there'}!
+          </Text>
           <Text style={styles.subtitle}>Let's sync with your cycle today</Text>
         </View>
 
-        {/* Current Phase Card */}
-        <LinearGradient
-          colors={getPhaseGradient(currentPhase)}
-          style={styles.phaseCard}
-        >
-          <View style={styles.phaseHeader}>
-            {getPhaseIcon(currentPhase)}
-            <View style={styles.phaseInfo}>
-              <Text style={styles.phaseName}>{phaseInfo.name} Phase</Text>
-              <Text style={styles.phaseDay}>Day {daysInPhase} • {phaseInfo.description}</Text>
+        {/* Cycle Tracker Section */}
+        <View style={styles.cycleTrackerSection}>
+          <Text style={styles.cycleTrackerTitle}>Cycle Tracker</Text>
+
+          <View style={styles.cycleInfoRow}>
+            <Text style={styles.cycleInfoText}>Today</Text>
+            <Text style={styles.cycleInfoSeparator}>|</Text>
+            <Text style={styles.cycleInfoText}>Day {cycleDay}</Text>
+            <Text style={styles.cycleInfoSeparator}>|</Text>
+            <Text style={styles.cycleInfoText}>
+              {phaseInfo.name} {currentPhase === 'luteal' ? 'Fall' : 'Phase'}
+            </Text>
+          </View>
+
+          <Text style={styles.cycleMessage}>
+            You're steady and productive; enjoy the slower pace.
+          </Text>
+
+          {/* Phase Labels */}
+          <View style={styles.phaseLabelsContainer}>
+            <View style={styles.phaseLabel}>
+              <View style={[styles.phaseDot, { backgroundColor: '#F9A826' }]} />
+              <Text style={styles.phaseLabelText}>Luteal</Text>
+            </View>
+            <View style={styles.phaseLabel}>
+              <View style={[styles.phaseDot, { backgroundColor: '#4FC3F7' }]} />
+              <Text style={styles.phaseLabelText}>Menstruation</Text>
             </View>
           </View>
-          <Text style={styles.phaseMessage}>{phaseInfo.message}</Text>
-        </LinearGradient>
+
+          {/* Progress Bar */}
+          <View style={styles.progressBarContainer}>
+            <LinearGradient
+              colors={getCycleProgressBarColors()}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.progressBar}
+            />
+
+            {/* Current Position Indicator */}
+            <View
+              style={[
+                styles.positionIndicator,
+                { left: `${getCyclePosition()}%` },
+              ]}
+            >
+              <View style={styles.iconCircle}>
+                {getPhaseIcon(currentPhase)}
+              </View>
+            </View>
+          </View>
+        </View>
 
         {/* Today's Recommendations */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Today's Recommendations</Text>
-          
+
           {/* Workout Card */}
           <View style={styles.recommendationCard}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>🏃‍♀️ Workout</Text>
               <TouchableOpacity
-                style={[styles.completeButton, completedTasks.has('workout') && styles.completedButton]}
+                style={[
+                  styles.completeButton,
+                  completedTasks.has('workout') && styles.completedButton,
+                ]}
                 onPress={() => handleTaskComplete('workout', 5)}
                 disabled={completedTasks.has('workout')}
               >
-                <CheckCircle size={20} color={completedTasks.has('workout') ? '#4CAF50' : '#9CA3AF'} />
+                <CheckCircle
+                  size={20}
+                  color={completedTasks.has('workout') ? '#4CAF50' : '#9CA3AF'}
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.cardContent}>{phaseInfo.workout}</Text>
@@ -127,11 +222,19 @@ export default function Dashboard() {
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>🍽️ Nutrition Focus</Text>
               <TouchableOpacity
-                style={[styles.completeButton, completedTasks.has('nutrition') && styles.completedButton]}
+                style={[
+                  styles.completeButton,
+                  completedTasks.has('nutrition') && styles.completedButton,
+                ]}
                 onPress={() => handleTaskComplete('nutrition', 3)}
                 disabled={completedTasks.has('nutrition')}
               >
-                <CheckCircle size={20} color={completedTasks.has('nutrition') ? '#4CAF50' : '#9CA3AF'} />
+                <CheckCircle
+                  size={20}
+                  color={
+                    completedTasks.has('nutrition') ? '#4CAF50' : '#9CA3AF'
+                  }
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.cardContent}>{phaseInfo.nutrition}</Text>
@@ -142,11 +245,17 @@ export default function Dashboard() {
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>🧘‍♀️ Self-Care</Text>
               <TouchableOpacity
-                style={[styles.completeButton, completedTasks.has('recovery') && styles.completedButton]}
+                style={[
+                  styles.completeButton,
+                  completedTasks.has('recovery') && styles.completedButton,
+                ]}
                 onPress={() => handleTaskComplete('recovery', 2)}
                 disabled={completedTasks.has('recovery')}
               >
-                <CheckCircle size={20} color={completedTasks.has('recovery') ? '#4CAF50' : '#9CA3AF'} />
+                <CheckCircle
+                  size={20}
+                  color={completedTasks.has('recovery') ? '#4CAF50' : '#9CA3AF'}
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.cardContent}>{phaseInfo.recovery}</Text>
@@ -159,11 +268,15 @@ export default function Dashboard() {
           <View style={styles.progressCard}>
             <View style={styles.progressRow}>
               <Text style={styles.progressLabel}>Total Points</Text>
-              <Text style={styles.progressValue}>{userData.totalPoints || 0}</Text>
+              <Text style={styles.progressValue}>
+                {userData.totalPoints || 0}
+              </Text>
             </View>
             <View style={styles.progressRow}>
               <Text style={styles.progressLabel}>Current Level</Text>
-              <Text style={styles.progressValue}>Level {Math.floor((userData.totalPoints || 0) / 100) + 1}</Text>
+              <Text style={styles.progressValue}>
+                Level {Math.floor((userData.totalPoints || 0) / 100) + 1}
+              </Text>
             </View>
             <View style={styles.progressRow}>
               <Text style={styles.progressLabel}>Tasks Today</Text>
@@ -179,7 +292,7 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F8F9FA',
   },
   scrollView: {
     flex: 1,
@@ -206,6 +319,88 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#6B7280',
+  },
+  cycleTrackerSection: {
+    backgroundColor: '#F5E6DA',
+    padding: 20,
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 16,
+  },
+  cycleTrackerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  cycleInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cycleInfoText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  cycleInfoSeparator: {
+    fontSize: 20,
+    color: '#9CA3AF',
+    marginHorizontal: 12,
+  },
+  cycleMessage: {
+    fontSize: 18,
+    color: '#4B5563',
+    marginBottom: 20,
+  },
+  phaseLabelsContainer: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  phaseLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  phaseDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  phaseLabelText: {
+    fontSize: 16,
+    color: '#4B5563',
+  },
+  progressBarContainer: {
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#E5E7EB',
+    marginBottom: 10,
+    position: 'relative',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 8,
+    width: '100%',
+  },
+  positionIndicator: {
+    position: 'absolute',
+    top: -20,
+    transform: [{ translateX: -25 }],
+  },
+  iconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   phaseCard: {
     margin: 20,
@@ -244,7 +439,6 @@ const styles = StyleSheet.create({
   },
   section: {
     padding: 20,
-    paddingTop: 0,
   },
   sectionTitle: {
     fontSize: 20,
