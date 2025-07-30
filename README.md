@@ -19,6 +19,17 @@ The app uses cycle phase tracking to deliver personalized suggestions that help 
 - **Achievement System**: Earn points by completing recommended activities
 - **Progress Tracking**: Monitor your consistency and growth over time
 - **Personalized Dashboard**: View your current cycle phase and relevant health information at a glance
+- **Content Filtering**: Filter content by categories like Today, Premium, Mindset, and more
+- **User Profiles**: Manage your personal information and app settings
+
+## Navigation Structure
+
+CycleSync features a modern, intuitive navigation system:
+
+- **Top Header**: Profile picture and action icons (Search, Shopping, Achievements)
+- **Horizontal Filters**: Scrollable filter buttons for content categories (Today, Premium, Mindset, etc.)
+- **Bottom Tab Navigation**: Main app sections (Cycle, Recovery, Dashboard, Nutrition, Fitness)
+- **Active Tab Highlighting**: Visual indication of your current location in the app
 
 ## Cycle Phases
 
@@ -28,6 +39,13 @@ CycleSync tracks and provides recommendations for four distinct menstrual cycle 
 2. **Follicular Phase**: Building energy with moderate activities and fresh nutrition
 3. **Ovulation Phase**: Peak energy for high-intensity workouts and performance
 4. **Luteal Phase**: Preparing for renewal with steady activities and mood support
+
+## User Experience
+
+- **Personalized Greeting**: Dashboard welcomes you by name
+- **Onboarding Flow**: Simple setup process to collect cycle information and wellness goals
+- **Profile Management**: View and edit your profile, with options for settings, notifications, and support
+- **Premium Features**: Access to exclusive content with premium subscription
 
 ## Getting Started
 
@@ -60,27 +78,23 @@ npm run dev
 ## Tech Stack
 
 - React Native
-- Expo
+- Expo & Expo Router for file-based navigation
 - TypeScript
 - AsyncStorage for local data persistence
-- React Navigation for routing
+- React Navigation for tab-based navigation
+- Lucide React Native for icons
+- Expo Linear Gradient for UI effects
+- React Native Safe Area Context for safe area handling
 
 ## Project Structure
 
 - `/app` - Main application screens and navigation
-  - `/(tabs)` - Tab-based navigation screens
+  - `/(tabs)` - Tab-based navigation screens (Dashboard, Cycle, Progress, Profile)
   - `/onboarding` - First-time user onboarding flow
+  - `/recovery`, `/nutrition`, `/fitness` - Lifestyle content screens
 - `/assets` - Images and static assets
 - `/hooks` - Custom React hooks
 - `/utils` - Utility functions for calculations and storage
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 

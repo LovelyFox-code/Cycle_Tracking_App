@@ -6,11 +6,22 @@ import { checkOnboardingStatus } from '@/utils/storage';
 import { router } from 'expo-router';
 import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, Image } from 'react-native';
 import { Chrome as Home, Calendar, User, Award, Search, ShoppingBag, Trophy, Heart, Utensils, Dumbbell } from 'lucide-react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePathname } from 'expo-router';
 
-// Create a context to share the active filter across components
-export const FilterContext = createContext({
-  activeFilter: 'Today',
+// Create contexts to share filter states across components
+export const NutritionFilterContext = createContext({
+  activeFilter: 'all',
+  setActiveFilter: (filter: string) => {},
+});
+
+export const FitnessFilterContext = createContext({
+  activeFilter: 'all',
+  setActiveFilter: (filter: string) => {},
+});
+
+export const RecoveryFilterContext = createContext({
+  activeFilter: 'all',
   setActiveFilter: (filter: string) => {},
 });
 
@@ -47,27 +58,56 @@ function TopHeader() {
   );
 }
 
-// Top Navigation Buttons (Horizontal Scrolling)
+// Tab-specific Filter Buttons (Horizontal Scrolling)
 function TopNavButtons() {
-  const { activeFilter, setActiveFilter } = useContext(FilterContext);
+  const { activeFilter: nutritionFilter, setActiveFilter: setNutritionFilter } = useContext(NutritionFilterContext);
+  const { activeFilter: fitnessFilter, setActiveFilter: setFitnessFilter } = useContext(FitnessFilterContext);
+  const { activeFilter: recoveryFilter, setActiveFilter: setRecoveryFilter } = useContext(RecoveryFilterContext);
   const currentPath = usePathname();
   
-  // Don't show buttons on the dashboard tab
-  if (currentPath === '/' || currentPath === '/index' || currentPath === '/(tabs)' || currentPath === '/(tabs)/index') {
+  // Don't show buttons on the dashboard tab or tabs that don't need filters
+  if (currentPath === '/' || currentPath === '/index' || currentPath === '/(tabs)' || currentPath === '/(tabs)/index' ||
+      currentPath === '/(tabs)/profile' || currentPath === '/(tabs)/achievements') {
     return null;
   }
   
-  const buttons = [
-    { id: 'Today', label: 'Today' },
-    { id: 'Premium', label: 'Premium' },
-    { id: 'Mindset', label: 'Mindset' },
-    { id: 'Business', label: 'Business' },
-    { id: 'More', label: 'More' },
-  ];
+  // Define buttons based on current path
+  let buttons = [];
+  let activeFilter = 'all';
+  let handleButtonPress = (buttonId: string): void => {};
   
-  const handleButtonPress = (buttonId: string): void => {
-    setActiveFilter(buttonId);
-  };
+  if (currentPath === '/nutrition') {
+    buttons = [
+      { id: 'all', label: 'All' },
+      { id: 'vegan', label: 'Vegan' },
+      { id: 'vegetarian', label: 'Vegetarian' },
+      { id: 'pescetarian', label: 'Pescetarian' }
+    ];
+    activeFilter = nutritionFilter;
+    handleButtonPress = setNutritionFilter;
+  } else if (currentPath === '/fitness') {
+    buttons = [
+      { id: 'all', label: 'All' },
+      { id: 'by_phase', label: 'By Phase' },
+      { id: 'yoga', label: 'Yoga' },
+      { id: 'pilates', label: 'Pilates' },
+      { id: 'weights', label: 'Weights' }
+    ];
+    activeFilter = fitnessFilter;
+    handleButtonPress = setFitnessFilter;
+  } else if (currentPath === '/recovery') {
+    buttons = [
+      { id: 'all', label: 'All' },
+      { id: 'sleep', label: 'Sleep' },
+      { id: 'stretching', label: 'Stretching' },
+      { id: 'meditation', label: 'Meditation' }
+    ];
+    activeFilter = recoveryFilter;
+    handleButtonPress = setRecoveryFilter;
+  } else {
+    // No filters for other screens
+    return null;
+  }
   
   return (
     <ScrollView 
@@ -168,11 +208,18 @@ function BottomTabBar() {
 export default function RootLayout() {
   useFrameworkReady();
   const [activeTab, setActiveTab] = useState('index');
-  const [activeFilter, setActiveFilter] = useState('Today');
+  const [nutritionFilter, setNutritionFilter] = useState('all');
+  const [fitnessFilter, setFitnessFilter] = useState('all');
+  const [recoveryFilter, setRecoveryFilter] = useState('all');
   const currentPath = usePathname();
   
   // Check if we're on an onboarding screen
   const isOnboardingScreen = currentPath?.startsWith('/onboarding');
+  
+  // Check if we're on a detail page that should hide the tab bar
+  const shouldHideTabBar = () => {
+    return currentPath?.includes('/nutrition/');
+  };
 
   useEffect(() => {
     checkAndRedirect();
@@ -186,29 +233,36 @@ export default function RootLayout() {
   };
 
   return (
-    <FilterContext.Provider value={{ activeFilter, setActiveFilter }}>
-      <View style={styles.container}>
-        <Stack screenOptions={{ 
-          headerShown: true,
-          header: () => (
-            <>
-              <TopHeader />
-              <TopNavButtons />
-            </>
-          )
-        }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-          <Stack.Screen name="lifestyle" />
-          <Stack.Screen name="recovery" />
-          <Stack.Screen name="nutrition" />
-          <Stack.Screen name="fitness" />
-        </Stack>
-        <StatusBar style="auto" />
-        {!isOnboardingScreen && <BottomTabBar />}
-      </View>
-    </FilterContext.Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NutritionFilterContext.Provider value={{ activeFilter: nutritionFilter, setActiveFilter: setNutritionFilter }}>
+        <FitnessFilterContext.Provider value={{ activeFilter: fitnessFilter, setActiveFilter: setFitnessFilter }}>
+          <RecoveryFilterContext.Provider value={{ activeFilter: recoveryFilter, setActiveFilter: setRecoveryFilter }}>
+            <View style={styles.container}>
+              <Stack screenOptions={{ 
+                headerShown: true,
+                header: () => (
+                  <>
+                    <TopHeader />
+                    <TopNavButtons />
+                  </>
+                )
+              }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+                <Stack.Screen name="lifestyle" />
+                <Stack.Screen name="recovery" />
+                <Stack.Screen name="nutrition" />
+                <Stack.Screen name="nutrition/[slug]" options={{ headerShown: true }} />
+                <Stack.Screen name="fitness" />
+              </Stack>
+              <StatusBar style="auto" />
+              {!isOnboardingScreen && !shouldHideTabBar() && <BottomTabBar />}
+            </View>
+          </RecoveryFilterContext.Provider>
+        </FitnessFilterContext.Provider>
+      </NutritionFilterContext.Provider>
+    </GestureHandlerRootView>
   );
 }
 

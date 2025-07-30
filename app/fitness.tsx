@@ -2,23 +2,23 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dumbbell } from 'lucide-react-native';
 import { useContext } from 'react';
-import { FilterContext } from '@/app/_layout';
+import { FitnessFilterContext } from '@/app/_layout';
 
 export default function FitnessScreen() {
-  const { activeFilter } = useContext(FilterContext);
+  const { activeFilter } = useContext(FitnessFilterContext);
   
   // Filter workouts based on the active filter
   const filteredWorkouts = workouts.filter(workout => {
-    if (activeFilter === 'Today') {
-      return workout.recommended === 'today';
-    } else if (activeFilter === 'Premium') {
-      return workout.isPremium;
-    } else if (activeFilter === 'Mindset') {
-      return workout.category === 'mindset';
-    } else if (activeFilter === 'Business') {
-      return workout.category === 'business';
+    if (activeFilter === 'by_phase') {
+      return workout.workoutType === 'phase_based';
+    } else if (activeFilter === 'yoga') {
+      return workout.workoutType === 'yoga';
+    } else if (activeFilter === 'pilates') {
+      return workout.workoutType === 'pilates';
+    } else if (activeFilter === 'weights') {
+      return workout.workoutType === 'weights';
     }
-    return true; // Show all for 'More' or any other filter
+    return true; // Show all when 'all' is selected
   });
 
   return (
@@ -27,10 +27,10 @@ export default function FitnessScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Fitness</Text>
           <Text style={styles.subtitle}>
-            {activeFilter === 'Today' ? 'Today\'s recommended workouts' :
-             activeFilter === 'Premium' ? 'Premium workouts' :
-             activeFilter === 'Mindset' ? 'Mindset-focused exercises' :
-             activeFilter === 'Business' ? 'Quick workouts for busy people' :
+            {activeFilter === 'by_phase' ? 'Workouts by cycle phase' :
+             activeFilter === 'yoga' ? 'Yoga workouts' :
+             activeFilter === 'pilates' ? 'Pilates workouts' :
+             activeFilter === 'weights' ? 'Strength training' :
              'All workouts'}
           </Text>
         </View>
@@ -72,7 +72,7 @@ const workouts = [
     title: 'Morning Energizer', 
     duration: '15 min', 
     points: 10,
-    recommended: 'today',
+    workoutType: 'weights',
     isPremium: false,
     category: 'general'
   },
@@ -80,7 +80,7 @@ const workouts = [
     title: 'Full Body Strength', 
     duration: '30 min', 
     points: 20,
-    recommended: '',
+    workoutType: 'weights',
     isPremium: true,
     category: 'general'
   },
@@ -88,7 +88,7 @@ const workouts = [
     title: 'Cardio Blast', 
     duration: '25 min', 
     points: 15,
-    recommended: 'today',
+    workoutType: 'phase_based',
     isPremium: false,
     category: 'general'
   },
@@ -96,7 +96,7 @@ const workouts = [
     title: 'Yoga Flow', 
     duration: '20 min', 
     points: 15,
-    recommended: '',
+    workoutType: 'yoga',
     isPremium: false,
     category: 'mindset'
   },
@@ -104,7 +104,7 @@ const workouts = [
     title: 'Core Workout', 
     duration: '10 min', 
     points: 10,
-    recommended: '',
+    workoutType: 'pilates',
     isPremium: false,
     category: 'business'
   },
@@ -112,7 +112,7 @@ const workouts = [
     title: 'Meditation & Movement', 
     duration: '15 min', 
     points: 15,
-    recommended: '',
+    workoutType: 'yoga',
     isPremium: false,
     category: 'mindset'
   },
@@ -120,7 +120,7 @@ const workouts = [
     title: 'Quick Office Break', 
     duration: '5 min', 
     points: 5,
-    recommended: '',
+    workoutType: 'pilates',
     isPremium: false,
     category: 'business'
   },
@@ -128,7 +128,7 @@ const workouts = [
     title: 'Advanced HIIT', 
     duration: '35 min', 
     points: 25,
-    recommended: '',
+    workoutType: 'phase_based',
     isPremium: true,
     category: 'general'
   },

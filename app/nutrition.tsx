@@ -2,23 +2,22 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Utensils } from 'lucide-react-native';
 import { useContext } from 'react';
-import { FilterContext } from '@/app/_layout';
+import { NutritionFilterContext } from '@/app/_layout';
+import { router } from 'expo-router';
 
 export default function NutritionScreen() {
-  const { activeFilter } = useContext(FilterContext);
+  const { activeFilter } = useContext(NutritionFilterContext);
   
   // Filter nutrition items based on the active filter
   const filteredItems = nutritionItems.filter(item => {
-    if (activeFilter === 'Today') {
-      return item.recommended === 'today';
-    } else if (activeFilter === 'Premium') {
-      return item.isPremium;
-    } else if (activeFilter === 'Mindset') {
-      return item.category === 'mindset';
-    } else if (activeFilter === 'Business') {
-      return item.category === 'business';
+    if (activeFilter === 'vegan') {
+      return item.dietType === 'vegan';
+    } else if (activeFilter === 'vegetarian') {
+      return item.dietType === 'vegetarian';
+    } else if (activeFilter === 'pescetarian') {
+      return item.dietType === 'pescetarian';
     }
-    return true; // Show all for 'More' or any other filter
+    return true; // Show all when 'all' is selected
   });
 
   return (
@@ -27,10 +26,9 @@ export default function NutritionScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Nutrition</Text>
           <Text style={styles.subtitle}>
-            {activeFilter === 'Today' ? 'Today\'s recommended meals' :
-             activeFilter === 'Premium' ? 'Premium nutrition plans' :
-             activeFilter === 'Mindset' ? 'Foods for mental clarity' :
-             activeFilter === 'Business' ? 'Quick and easy meals' :
+            {activeFilter === 'vegan' ? 'Vegan meal options' :
+             activeFilter === 'vegetarian' ? 'Vegetarian meal options' :
+             activeFilter === 'pescetarian' ? 'Pescetarian meal options' :
              'All nutrition options'}
           </Text>
         </View>
@@ -38,7 +36,11 @@ export default function NutritionScreen() {
         <View style={styles.cardList}>
           {filteredItems.length > 0 ? (
             filteredItems.map((item, index) => (
-              <TouchableOpacity key={index} style={styles.card}>
+              <TouchableOpacity 
+                key={index} 
+                style={styles.card}
+                onPress={() => router.push(`/nutrition/${item.slug}`)}
+              >
                 <View style={styles.iconContainer}>
                   <Utensils size={24} color="#FF6B6B" />
                 </View>
@@ -72,57 +74,64 @@ const nutritionItems = [
     title: 'Hormone-Balancing Breakfast', 
     description: 'Protein-rich morning meal', 
     points: 15,
-    recommended: 'today',
+    dietType: 'vegetarian',
     isPremium: false,
-    category: 'general'
+    category: 'general',
+    slug: 'hormone-balancing-breakfast'
   },
   { 
     title: 'Anti-Inflammatory Lunch', 
     description: 'Colorful veggies and healthy fats', 
     points: 15,
-    recommended: '',
+    dietType: 'vegan',
     isPremium: true,
-    category: 'general'
+    category: 'general',
+    slug: 'anti-inflammatory-lunch'
   },
   { 
     title: 'Energy-Boosting Snack', 
     description: 'Natural sugars and protein', 
     points: 10,
-    recommended: 'today',
+    dietType: 'vegan',
     isPremium: false,
-    category: 'business'
+    category: 'business',
+    slug: 'energy-boosting-snack'
   },
   { 
     title: 'Magnesium-Rich Dinner', 
     description: 'Leafy greens and whole grains', 
     points: 15,
-    recommended: '',
+    dietType: 'vegetarian',
     isPremium: false,
-    category: 'mindset'
+    category: 'mindset',
+    slug: 'magnesium-rich-dinner'
   },
   { 
     title: 'Hydration Tracker', 
     description: 'Track your water intake', 
     points: 10,
-    recommended: '',
+    dietType: 'all',
     isPremium: false,
-    category: 'general'
+    category: 'general',
+    slug: 'hydration-tracker'
   },
   { 
     title: 'Brain Food Lunch', 
     description: 'Omega-3 rich foods for focus', 
     points: 15,
-    recommended: '',
+    dietType: 'pescetarian',
     isPremium: false,
-    category: 'mindset'
+    category: 'mindset',
+    slug: 'brain-food-lunch'
   },
   { 
     title: 'Meal Prep Guide', 
     description: 'Save time with prepared meals', 
     points: 20,
-    recommended: '',
+    dietType: 'pescetarian',
     isPremium: true,
-    category: 'business'
+    category: 'business',
+    slug: 'meal-prep-guide'
   },
 ];
 

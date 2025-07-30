@@ -2,23 +2,21 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Heart } from 'lucide-react-native';
 import { useContext } from 'react';
-import { FilterContext } from '@/app/_layout';
+import { RecoveryFilterContext } from '@/app/_layout';
 
 export default function RecoveryScreen() {
-  const { activeFilter } = useContext(FilterContext);
+  const { activeFilter } = useContext(RecoveryFilterContext);
   
   // Filter recovery items based on the active filter
   const filteredItems = recoveryItems.filter(item => {
-    if (activeFilter === 'Today') {
-      return item.recommended === 'today';
-    } else if (activeFilter === 'Premium') {
-      return item.isPremium;
-    } else if (activeFilter === 'Mindset') {
-      return item.category === 'mindset';
-    } else if (activeFilter === 'Business') {
-      return item.category === 'business';
+    if (activeFilter === 'sleep') {
+      return item.recoveryType === 'sleep';
+    } else if (activeFilter === 'stretching') {
+      return item.recoveryType === 'stretching';
+    } else if (activeFilter === 'meditation') {
+      return item.recoveryType === 'meditation';
     }
-    return true; // Show all for 'More' or any other filter
+    return true; // Show all when 'all' is selected
   });
 
   return (
@@ -27,10 +25,9 @@ export default function RecoveryScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Recovery</Text>
           <Text style={styles.subtitle}>
-            {activeFilter === 'Today' ? 'Today\'s recovery activities' :
-             activeFilter === 'Premium' ? 'Premium recovery plans' :
-             activeFilter === 'Mindset' ? 'Mental recovery techniques' :
-             activeFilter === 'Business' ? 'Quick recovery breaks' :
+            {activeFilter === 'sleep' ? 'Sleep recovery techniques' :
+             activeFilter === 'stretching' ? 'Stretching routines' :
+             activeFilter === 'meditation' ? 'Meditation practices' :
              'All recovery options'}
           </Text>
         </View>
@@ -72,7 +69,7 @@ const recoveryItems = [
     title: 'Deep Breathing', 
     description: '5 minutes of focused breathing', 
     points: 10,
-    recommended: 'today',
+    recoveryType: 'meditation',
     isPremium: false,
     category: 'mindset'
   },
@@ -80,7 +77,7 @@ const recoveryItems = [
     title: 'Stretching', 
     description: '10-minute gentle stretch routine', 
     points: 15,
-    recommended: '',
+    recoveryType: 'stretching',
     isPremium: false,
     category: 'general'
   },
@@ -88,7 +85,7 @@ const recoveryItems = [
     title: 'Meditation', 
     description: 'Guided meditation session', 
     points: 20,
-    recommended: '',
+    recoveryType: 'meditation',
     isPremium: true,
     category: 'mindset'
   },
@@ -96,7 +93,7 @@ const recoveryItems = [
     title: 'Epsom Salt Bath', 
     description: '20-minute relaxation soak', 
     points: 15,
-    recommended: 'today',
+    recoveryType: 'stretching',
     isPremium: false,
     category: 'general'
   },
@@ -104,7 +101,7 @@ const recoveryItems = [
     title: 'Sleep Hygiene', 
     description: 'Prepare for quality sleep', 
     points: 10,
-    recommended: '',
+    recoveryType: 'sleep',
     isPremium: false,
     category: 'general'
   },
@@ -112,7 +109,7 @@ const recoveryItems = [
     title: 'Quick Desk Stretch', 
     description: '2-minute office recovery', 
     points: 5,
-    recommended: '',
+    recoveryType: 'stretching',
     isPremium: false,
     category: 'business'
   },
@@ -120,7 +117,7 @@ const recoveryItems = [
     title: 'Stress Management', 
     description: 'Advanced relaxation techniques', 
     points: 25,
-    recommended: '',
+    recoveryType: 'sleep',
     isPremium: true,
     category: 'business'
   },
