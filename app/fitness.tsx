@@ -1,64 +1,156 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dumbbell } from 'lucide-react-native';
 import { useContext } from 'react';
 import { FitnessFilterContext } from '@/app/_layout';
+import { Link } from 'expo-router';
+
+const workouts = [
+  {
+    slug: 'morning-energizer',
+    title: 'Morning Energizer',
+    duration: '15 min',
+    points: 10,
+    workoutType: 'weights',
+    isPremium: false,
+    category: 'general',
+  },
+  {
+    slug: 'full-body-strength',
+    title: 'Full Body Strength',
+    duration: '30 min',
+    points: 20,
+    workoutType: 'weights',
+    isPremium: true,
+    category: 'general',
+  },
+  {
+    slug: 'cardio-blast',
+    title: 'Cardio Blast',
+    duration: '25 min',
+    points: 15,
+    workoutType: 'phase_based',
+    isPremium: false,
+    category: 'general',
+  },
+  {
+    slug: 'yoga-flow',
+    title: 'Yoga Flow',
+    duration: '20 min',
+    points: 15,
+    workoutType: 'yoga',
+    isPremium: false,
+    category: 'mindset',
+  },
+  {
+    slug: 'core-workout',
+    title: 'Core Workout',
+    duration: '10 min',
+    points: 10,
+    workoutType: 'pilates',
+    isPremium: false,
+    category: 'business',
+  },
+  {
+    slug: 'meditation-and-movement',
+    title: 'Meditation & Movement',
+    duration: '15 min',
+    points: 15,
+    workoutType: 'yoga',
+    isPremium: false,
+    category: 'mindset',
+  },
+  {
+    slug: 'quick-office-break',
+    title: 'Quick Office Break',
+    duration: '5 min',
+    points: 5,
+    workoutType: 'pilates',
+    isPremium: false,
+    category: 'business',
+  },
+  {
+    slug: 'advanced-hiit',
+    title: 'Advanced HIIT',
+    duration: '35 min',
+    points: 25,
+    workoutType: 'phase_based',
+    isPremium: true,
+    category: 'general',
+  },
+];
 
 export default function FitnessScreen() {
   const { activeFilter } = useContext(FitnessFilterContext);
-  
-  // Filter workouts based on the active filter
-  const filteredWorkouts = workouts.filter(workout => {
-    if (activeFilter === 'by_phase') {
+
+  const filteredWorkouts = workouts.filter((workout) => {
+    if (activeFilter === 'by_phase')
       return workout.workoutType === 'phase_based';
-    } else if (activeFilter === 'yoga') {
-      return workout.workoutType === 'yoga';
-    } else if (activeFilter === 'pilates') {
-      return workout.workoutType === 'pilates';
-    } else if (activeFilter === 'weights') {
-      return workout.workoutType === 'weights';
-    }
-    return true; // Show all when 'all' is selected
+    if (activeFilter === 'yoga') return workout.workoutType === 'yoga';
+    if (activeFilter === 'pilates') return workout.workoutType === 'pilates';
+    if (activeFilter === 'weights') return workout.workoutType === 'weights';
+    return true;
   });
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Fitness</Text>
           <Text style={styles.subtitle}>
-            {activeFilter === 'by_phase' ? 'Workouts by cycle phase' :
-             activeFilter === 'yoga' ? 'Yoga workouts' :
-             activeFilter === 'pilates' ? 'Pilates workouts' :
-             activeFilter === 'weights' ? 'Strength training' :
-             'All workouts'}
+            {activeFilter === 'by_phase'
+              ? 'Workouts by cycle phase'
+              : activeFilter === 'yoga'
+              ? 'Yoga workouts'
+              : activeFilter === 'pilates'
+              ? 'Pilates workouts'
+              : activeFilter === 'weights'
+              ? 'Strength training'
+              : 'All workouts'}
           </Text>
         </View>
-        
+
         <View style={styles.workoutList}>
           {filteredWorkouts.length > 0 ? (
             filteredWorkouts.map((workout, index) => (
-              <TouchableOpacity key={index} style={styles.workoutCard}>
-                <View style={styles.workoutIconContainer}>
-                  <Dumbbell size={24} color="#FF6B6B" />
-                </View>
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.workoutTitle}>{workout.title}</Text>
-                  <Text style={styles.workoutDuration}>{workout.duration}</Text>
-                  {workout.isPremium && (
-                    <View style={styles.premiumBadge}>
-                      <Text style={styles.premiumText}>PREMIUM</Text>
-                    </View>
-                  )}
-                </View>
-                <View style={styles.pointsContainer}>
-                  <Text style={styles.pointsText}>{workout.points} points</Text>
-                </View>
-              </TouchableOpacity>
+              <Link key={index} href={`/fitness/${workout.slug}`} asChild>
+                <TouchableOpacity style={styles.workoutCard}>
+                  <View style={styles.workoutIconContainer}>
+                    <Dumbbell size={24} color="#FF6B6B" />
+                  </View>
+                  <View style={styles.workoutInfo}>
+                    <Text style={styles.workoutTitle}>{workout.title}</Text>
+                    <Text style={styles.workoutDuration}>
+                      {workout.duration}
+                    </Text>
+                    {workout.isPremium && (
+                      <View style={styles.premiumBadge}>
+                        <Text style={styles.premiumText}>PREMIUM</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.pointsContainer}>
+                    <Text style={styles.pointsText}>
+                      {workout.points} points
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </Link>
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No workouts available for this filter</Text>
+              <Text style={styles.emptyStateText}>
+                No workouts available for this filter
+              </Text>
             </View>
           )}
         </View>
@@ -67,78 +159,11 @@ export default function FitnessScreen() {
   );
 }
 
-const workouts = [
-  { 
-    title: 'Morning Energizer', 
-    duration: '15 min', 
-    points: 10,
-    workoutType: 'weights',
-    isPremium: false,
-    category: 'general'
-  },
-  { 
-    title: 'Full Body Strength', 
-    duration: '30 min', 
-    points: 20,
-    workoutType: 'weights',
-    isPremium: true,
-    category: 'general'
-  },
-  { 
-    title: 'Cardio Blast', 
-    duration: '25 min', 
-    points: 15,
-    workoutType: 'phase_based',
-    isPremium: false,
-    category: 'general'
-  },
-  { 
-    title: 'Yoga Flow', 
-    duration: '20 min', 
-    points: 15,
-    workoutType: 'yoga',
-    isPremium: false,
-    category: 'mindset'
-  },
-  { 
-    title: 'Core Workout', 
-    duration: '10 min', 
-    points: 10,
-    workoutType: 'pilates',
-    isPremium: false,
-    category: 'business'
-  },
-  { 
-    title: 'Meditation & Movement', 
-    duration: '15 min', 
-    points: 15,
-    workoutType: 'yoga',
-    isPremium: false,
-    category: 'mindset'
-  },
-  { 
-    title: 'Quick Office Break', 
-    duration: '5 min', 
-    points: 5,
-    workoutType: 'pilates',
-    isPremium: false,
-    category: 'business'
-  },
-  { 
-    title: 'Advanced HIIT', 
-    duration: '35 min', 
-    points: 25,
-    workoutType: 'phase_based',
-    isPremium: true,
-    category: 'general'
-  },
-];
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
-    paddingBottom: 60, // Make room for bottom tabs
+    paddingBottom: 60,
   },
   scrollView: {
     flex: 1,
@@ -229,4 +254,4 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     textAlign: 'center',
   },
-}); 
+});

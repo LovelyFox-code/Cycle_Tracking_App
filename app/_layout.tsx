@@ -4,8 +4,27 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { checkOnboardingStatus } from '@/utils/storage';
 import { router } from 'expo-router';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, Image } from 'react-native';
-import { Chrome as Home, Calendar, User, Award, Search, ShoppingBag, Trophy, Heart, Utensils, Dumbbell } from 'lucide-react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Platform,
+  ScrollView,
+  Image,
+} from 'react-native';
+import {
+  Chrome as Home,
+  Calendar,
+  User,
+  Award,
+  Search,
+  ShoppingBag,
+  Trophy,
+  Heart,
+  Utensils,
+  Dumbbell,
+} from 'lucide-react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePathname } from 'expo-router';
 
@@ -30,16 +49,19 @@ function TopHeader() {
   const handleProfilePress = () => {
     router.push('/(tabs)/profile');
   };
-  
+
   const handleAchievementsPress = () => {
     router.push('/(tabs)/achievements');
   };
 
   return (
     <View style={styles.topHeader}>
-      <TouchableOpacity onPress={handleProfilePress} style={styles.profileContainer}>
-        <Image 
-          source={require('@/assets/images/icon.png')} 
+      <TouchableOpacity
+        onPress={handleProfilePress}
+        style={styles.profileContainer}
+      >
+        <Image
+          source={require('@/assets/images/icon.png')}
           style={styles.profileImage}
         />
       </TouchableOpacity>
@@ -50,7 +72,10 @@ function TopHeader() {
         <TouchableOpacity style={styles.iconButton}>
           <ShoppingBag size={24} color="#9CA3AF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleAchievementsPress} style={styles.iconButton}>
+        <TouchableOpacity
+          onPress={handleAchievementsPress}
+          style={styles.iconButton}
+        >
           <Trophy size={24} color="#9CA3AF" />
         </TouchableOpacity>
       </View>
@@ -60,28 +85,37 @@ function TopHeader() {
 
 // Tab-specific Filter Buttons (Horizontal Scrolling)
 function TopNavButtons() {
-  const { activeFilter: nutritionFilter, setActiveFilter: setNutritionFilter } = useContext(NutritionFilterContext);
-  const { activeFilter: fitnessFilter, setActiveFilter: setFitnessFilter } = useContext(FitnessFilterContext);
-  const { activeFilter: recoveryFilter, setActiveFilter: setRecoveryFilter } = useContext(RecoveryFilterContext);
+  const { activeFilter: nutritionFilter, setActiveFilter: setNutritionFilter } =
+    useContext(NutritionFilterContext);
+  const { activeFilter: fitnessFilter, setActiveFilter: setFitnessFilter } =
+    useContext(FitnessFilterContext);
+  const { activeFilter: recoveryFilter, setActiveFilter: setRecoveryFilter } =
+    useContext(RecoveryFilterContext);
   const currentPath = usePathname();
-  
+
   // Don't show buttons on the dashboard tab or tabs that don't need filters
-  if (currentPath === '/' || currentPath === '/index' || currentPath === '/(tabs)' || currentPath === '/(tabs)/index' ||
-      currentPath === '/(tabs)/profile' || currentPath === '/(tabs)/achievements') {
+  if (
+    currentPath === '/' ||
+    currentPath === '/index' ||
+    currentPath === '/(tabs)' ||
+    currentPath === '/(tabs)/index' ||
+    currentPath === '/(tabs)/profile' ||
+    currentPath === '/(tabs)/achievements'
+  ) {
     return null;
   }
-  
+
   // Define buttons based on current path
   let buttons = [];
   let activeFilter = 'all';
   let handleButtonPress = (buttonId: string): void => {};
-  
+
   if (currentPath === '/nutrition') {
     buttons = [
       { id: 'all', label: 'All' },
       { id: 'vegan', label: 'Vegan' },
       { id: 'vegetarian', label: 'Vegetarian' },
-      { id: 'pescetarian', label: 'Pescetarian' }
+      { id: 'pescetarian', label: 'Pescetarian' },
     ];
     activeFilter = nutritionFilter;
     handleButtonPress = setNutritionFilter;
@@ -91,7 +125,7 @@ function TopNavButtons() {
       { id: 'by_phase', label: 'By Phase' },
       { id: 'yoga', label: 'Yoga' },
       { id: 'pilates', label: 'Pilates' },
-      { id: 'weights', label: 'Weights' }
+      { id: 'weights', label: 'Weights' },
     ];
     activeFilter = fitnessFilter;
     handleButtonPress = setFitnessFilter;
@@ -100,7 +134,7 @@ function TopNavButtons() {
       { id: 'all', label: 'All' },
       { id: 'sleep', label: 'Sleep' },
       { id: 'stretching', label: 'Stretching' },
-      { id: 'meditation', label: 'Meditation' }
+      { id: 'meditation', label: 'Meditation' },
     ];
     activeFilter = recoveryFilter;
     handleButtonPress = setRecoveryFilter;
@@ -108,11 +142,11 @@ function TopNavButtons() {
     // No filters for other screens
     return null;
   }
-  
+
   return (
-    <ScrollView 
-      horizontal 
-      showsHorizontalScrollIndicator={false} 
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.topButtonsContainer}
     >
       {buttons.map((button) => (
@@ -120,14 +154,16 @@ function TopNavButtons() {
           key={button.id}
           style={[
             styles.topButton,
-            activeFilter === button.id && styles.topButtonActive
+            activeFilter === button.id && styles.topButtonActive,
           ]}
           onPress={() => handleButtonPress(button.id)}
         >
-          <Text style={[
-            styles.topButtonLabel,
-            activeFilter === button.id && styles.topButtonLabelActive
-          ]}>
+          <Text
+            style={[
+              styles.topButtonLabel,
+              activeFilter === button.id && styles.topButtonLabelActive,
+            ]}
+          >
             {button.label}
           </Text>
         </TouchableOpacity>
@@ -139,10 +175,15 @@ function TopNavButtons() {
 // Bottom Tab Bar Component for Main Navigation
 function BottomTabBar() {
   const currentPath = usePathname();
-  
+
   // Determine active tab based on current path
   const getActiveTabName = () => {
-    if (currentPath === '/' || currentPath === '/index' || currentPath === '/(tabs)' || currentPath === '/(tabs)/index') {
+    if (
+      currentPath === '/' ||
+      currentPath === '/index' ||
+      currentPath === '/(tabs)' ||
+      currentPath === '/(tabs)/index'
+    ) {
       return 'index';
     } else if (currentPath?.includes('/cycle')) {
       return 'cycle';
@@ -159,9 +200,9 @@ function BottomTabBar() {
     }
     return '';
   };
-  
+
   const activeTabName = getActiveTabName();
-  
+
   const tabs = [
     { name: 'cycle', icon: Calendar, label: 'Cycle' },
     { name: 'recovery', icon: Heart, label: 'Recovery' },
@@ -169,7 +210,7 @@ function BottomTabBar() {
     { name: 'nutrition', icon: Utensils, label: 'Nutrition' },
     { name: 'fitness', icon: Dumbbell, label: 'Fitness' },
   ];
-  
+
   const handleTabPress = (tabName: string): void => {
     if (tabName === 'index') {
       router.push('/');
@@ -179,7 +220,7 @@ function BottomTabBar() {
       router.push(`/${tabName}` as any);
     }
   };
-  
+
   return (
     <View style={styles.bottomTabBar}>
       {tabs.map((tab) => {
@@ -192,10 +233,7 @@ function BottomTabBar() {
             onPress={() => handleTabPress(tab.name)}
           >
             <Icon size={24} color={isActive ? '#FF6B6B' : '#9CA3AF'} />
-            <Text style={[
-              styles.tabLabel,
-              isActive && styles.activeTabLabel
-            ]}>
+            <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -212,10 +250,10 @@ export default function RootLayout() {
   const [fitnessFilter, setFitnessFilter] = useState('all');
   const [recoveryFilter, setRecoveryFilter] = useState('all');
   const currentPath = usePathname();
-  
+
   // Check if we're on an onboarding screen
   const isOnboardingScreen = currentPath?.startsWith('/onboarding');
-  
+
   // Check if we're on a detail page that should hide the tab bar
   const shouldHideTabBar = () => {
     return currentPath?.includes('/nutrition/');
@@ -234,26 +272,51 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NutritionFilterContext.Provider value={{ activeFilter: nutritionFilter, setActiveFilter: setNutritionFilter }}>
-        <FitnessFilterContext.Provider value={{ activeFilter: fitnessFilter, setActiveFilter: setFitnessFilter }}>
-          <RecoveryFilterContext.Provider value={{ activeFilter: recoveryFilter, setActiveFilter: setRecoveryFilter }}>
+      <NutritionFilterContext.Provider
+        value={{
+          activeFilter: nutritionFilter,
+          setActiveFilter: setNutritionFilter,
+        }}
+      >
+        <FitnessFilterContext.Provider
+          value={{
+            activeFilter: fitnessFilter,
+            setActiveFilter: setFitnessFilter,
+          }}
+        >
+          <RecoveryFilterContext.Provider
+            value={{
+              activeFilter: recoveryFilter,
+              setActiveFilter: setRecoveryFilter,
+            }}
+          >
             <View style={styles.container}>
-              <Stack screenOptions={{ 
-                headerShown: true,
-                header: () => (
-                  <>
-                    <TopHeader />
-                    <TopNavButtons />
-                  </>
-                )
-              }}>
+              <Stack
+                screenOptions={{
+                  headerShown: true,
+                  header: () => (
+                    <>
+                      <TopHeader />
+                      <TopNavButtons />
+                    </>
+                  ),
+                }}
+              >
                 <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-                <Stack.Screen name="lifestyle" />
+                <Stack.Screen
+                  name="onboarding"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="+not-found"
+                  options={{ headerShown: false }}
+                />
                 <Stack.Screen name="recovery" />
                 <Stack.Screen name="nutrition" />
-                <Stack.Screen name="nutrition/[slug]" options={{ headerShown: true }} />
+                <Stack.Screen
+                  name="nutrition/[slug]"
+                  options={{ headerShown: true }}
+                />
                 <Stack.Screen name="fitness" />
               </Stack>
               <StatusBar style="auto" />
