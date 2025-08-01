@@ -1,15 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronLeft, ChevronRight, Droplets, Sun, Heart, Moon } from 'lucide-react-native';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Droplets,
+  Sun,
+  Heart,
+  Moon,
+} from 'lucide-react-native';
 import { getUserData } from '@/utils/storage';
-import { getCurrentPhase, getPhaseForDay, calculateCycleDay } from '@/utils/cycleCalculations';
+import {
+  getCurrentPhase,
+  getPhaseForDay,
+  calculateCycleDay,
+} from '@/utils/cycleCalculations';
+
+type UserData = {
+  lastPeriodDate: string;
+  cycleLength: number;
+  // add other properties if needed
+};
 
 export default function CycleScreen() {
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [calendarDays, setCalendarDays] = useState([]);
+  type CalendarDay = {
+    date: Date;
+    cycleDay: number;
+    phase: string | null;
+    isCurrentMonth: boolean;
+    isToday: boolean;
+  };
+
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
 
   useEffect(() => {
     loadUserData();
@@ -29,6 +60,10 @@ export default function CycleScreen() {
   };
 
   const generateCalendarDays = () => {
+    if (!userData) {
+      setCalendarDays([]);
+      return;
+    }
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -40,10 +75,19 @@ export default function CycleScreen() {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 41); // 6 weeks
 
-    for (let date = new Date(startDate); date < endDate; date.setDate(date.getDate() + 1)) {
-      const cycleDay = calculateCycleDay(new Date(userData.lastPeriodDate), userData.cycleLength, new Date(date));
-      const phase = cycleDay > 0 ? getPhaseForDay(cycleDay, userData.cycleLength) : null;
-      
+    for (
+      let date = new Date(startDate);
+      date < endDate;
+      date.setDate(date.getDate() + 1)
+    ) {
+      const cycleDay = calculateCycleDay(
+        new Date(userData.lastPeriodDate),
+        userData.cycleLength,
+        new Date(date)
+      );
+      const phase =
+        cycleDay > 0 ? getPhaseForDay(cycleDay, userData.cycleLength) : null;
+
       days.push({
         date: new Date(date),
         cycleDay,
@@ -56,35 +100,55 @@ export default function CycleScreen() {
     setCalendarDays(days);
   };
 
-  const getPhaseColor = (phase) => {
+  const getPhaseColor = (phase: string) => {
     switch (phase) {
-      case 'menstrual': return '#FF6B6B';
-      case 'follicular': return '#FFD93D';
-      case 'ovulation': return '#FF1744';
-      case 'luteal': return '#8E24AA';
-      default: return '#E5E7EB';
+      case 'menstrual':
+        return '#FF6B6B';
+      case 'follicular':
+        return '#FFD93D';
+      case 'ovulation':
+        return '#FF1744';
+      case 'luteal':
+        return '#8E24AA';
+      default:
+        return '#E5E7EB';
     }
   };
 
-  const getPhaseIcon = (phase) => {
+  const getPhaseIcon = (phase: string) => {
     switch (phase) {
-      case 'menstrual': return <Droplets size={16} color="#FFFFFF" />;
-      case 'follicular': return <Sun size={16} color="#FFFFFF" />;
-      case 'ovulation': return <Heart size={16} color="#FFFFFF" />;
-      case 'luteal': return <Moon size={16} color="#FFFFFF" />;
-      default: return null;
+      case 'menstrual':
+        return <Droplets size={16} color="#FFFFFF" />;
+      case 'follicular':
+        return <Sun size={16} color="#FFFFFF" />;
+      case 'ovulation':
+        return <Heart size={16} color="#FFFFFF" />;
+      case 'luteal':
+        return <Moon size={16} color="#FFFFFF" />;
+      default:
+        return null;
     }
   };
 
-  const navigateMonth = (direction) => {
+  const navigateMonth = (direction: number) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(newDate.getMonth() + direction);
     setCurrentDate(newDate);
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -99,11 +163,14 @@ export default function CycleScreen() {
     );
   }
 
-  const currentPhase = getCurrentPhase(userData.lastPeriodDate, userData.cycleLength);
+  const currentPhase = getCurrentPhase(
+    userData.lastPeriodDate,
+    userData.cycleLength
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ScrollView showsVerticalScrollIndicator={false}>       
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Cycle Calendar</Text>
@@ -117,20 +184,31 @@ export default function CycleScreen() {
         >
           <View style={styles.phaseRow}>
             {getPhaseIcon(currentPhase)}
-            <Text style={styles.currentPhaseText}>{currentPhase?.charAt(0).toUpperCase() + currentPhase?.slice(1)} Phase</Text>
+            <Text style={styles.currentPhaseText}>
+              {currentPhase?.charAt(0).toUpperCase() + currentPhase?.slice(1)}{' '}
+              Phase
+            </Text>
           </View>
-          <Text style={styles.cycleInfo}>Cycle Length: {userData.cycleLength} days</Text>
+          <Text style={styles.cycleInfo}>
+            Cycle Length: {userData.cycleLength} days
+          </Text>
         </LinearGradient>
 
         {/* Calendar Navigation */}
         <View style={styles.calendarHeader}>
-          <TouchableOpacity onPress={() => navigateMonth(-1)} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() => navigateMonth(-1)}
+            style={styles.navButton}
+          >
             <ChevronLeft size={24} color="#6B7280" />
           </TouchableOpacity>
           <Text style={styles.monthYear}>
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </Text>
-          <TouchableOpacity onPress={() => navigateMonth(1)} style={styles.navButton}>
+          <TouchableOpacity
+            onPress={() => navigateMonth(1)}
+            style={styles.navButton}
+          >
             <ChevronRight size={24} color="#6B7280" />
           </TouchableOpacity>
         </View>
@@ -140,7 +218,9 @@ export default function CycleScreen() {
           {/* Day headers */}
           <View style={styles.dayHeaders}>
             {dayNames.map((day) => (
-              <Text key={day} style={styles.dayHeader}>{day}</Text>
+              <Text key={day} style={styles.dayHeader}>
+                {day}
+              </Text>
             ))}
           </View>
 
@@ -180,13 +260,34 @@ export default function CycleScreen() {
           <Text style={styles.legendTitle}>Phase Legend</Text>
           <View style={styles.legendGrid}>
             {[
-              { phase: 'menstrual', name: 'Menstrual', icon: <Droplets size={16} color="#FFFFFF" /> },
-              { phase: 'follicular', name: 'Follicular', icon: <Sun size={16} color="#FFFFFF" /> },
-              { phase: 'ovulation', name: 'Ovulation', icon: <Heart size={16} color="#FFFFFF" /> },
-              { phase: 'luteal', name: 'Luteal', icon: <Moon size={16} color="#FFFFFF" /> },
+              {
+                phase: 'menstrual',
+                name: 'Menstrual',
+                icon: <Droplets size={16} color="#FFFFFF" />,
+              },
+              {
+                phase: 'follicular',
+                name: 'Follicular',
+                icon: <Sun size={16} color="#FFFFFF" />,
+              },
+              {
+                phase: 'ovulation',
+                name: 'Ovulation',
+                icon: <Heart size={16} color="#FFFFFF" />,
+              },
+              {
+                phase: 'luteal',
+                name: 'Luteal',
+                icon: <Moon size={16} color="#FFFFFF" />,
+              },
             ].map((item) => (
               <View key={item.phase} style={styles.legendItem}>
-                <View style={[styles.legendCircle, { backgroundColor: getPhaseColor(item.phase) }]}>
+                <View
+                  style={[
+                    styles.legendCircle,
+                    { backgroundColor: getPhaseColor(item.phase) },
+                  ]}
+                >
                   {item.icon}
                 </View>
                 <Text style={styles.legendText}>{item.name}</Text>

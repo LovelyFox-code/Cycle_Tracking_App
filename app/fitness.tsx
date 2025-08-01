@@ -1,15 +1,11 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dumbbell } from 'lucide-react-native';
 import { useContext } from 'react';
 import { FitnessFilterContext } from '@/app/_layout';
 import { Link } from 'expo-router';
+import { colors } from '@/styles/theme';
+import { categoryScreenStyles as styles } from '@/styles/screens';
 
 const workouts = [
   {
@@ -119,17 +115,17 @@ export default function FitnessScreen() {
           </Text>
         </View>
 
-        <View style={styles.workoutList}>
+        <View style={styles.cardList}>
           {filteredWorkouts.length > 0 ? (
             filteredWorkouts.map((workout, index) => (
               <Link key={index} href={`/fitness/${workout.slug}`} asChild>
-                <TouchableOpacity style={styles.workoutCard}>
-                  <View style={styles.workoutIconContainer}>
-                    <Dumbbell size={24} color="#FF6B6B" />
+                <TouchableOpacity style={styles.card}>
+                  <View style={styles.iconContainer}>
+                    <Dumbbell size={24} color={colors.primary} />
                   </View>
-                  <View style={styles.workoutInfo}>
-                    <Text style={styles.workoutTitle}>{workout.title}</Text>
-                    <Text style={styles.workoutDuration}>
+                  <View style={styles.cardInfo}>
+                    <Text style={styles.cardTitle}>{workout.title}</Text>
+                    <Text style={styles.cardDescription}>
                       {workout.duration}
                     </Text>
                     {workout.isPremium && (
@@ -158,100 +154,3 @@ export default function FitnessScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingBottom: 60,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-  },
-  workoutList: {
-    marginBottom: 20,
-  },
-  workoutCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  workoutIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#FFF0F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  workoutInfo: {
-    flex: 1,
-  },
-  workoutTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  workoutDuration: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  pointsContainer: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  pointsText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#4B5563',
-  },
-  premiumBadge: {
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginTop: 4,
-    alignSelf: 'flex-start',
-  },
-  premiumText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#92400E',
-  },
-  emptyState: {
-    padding: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: '#9CA3AF',
-    textAlign: 'center',
-  },
-});

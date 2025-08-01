@@ -101,7 +101,7 @@ export default function Dashboard() {
     }
   };
 
-  const getCycleProgressBarColors = () => {
+  const getCycleProgressBarColors = (): [string, string, ...string[]] => {
     return ['#F9A826', '#FF6B6B', '#4FC3F7', '#8E24AA'];
   };
 
