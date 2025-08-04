@@ -1,12 +1,12 @@
 // styles/screens/categoryScreens.ts
 import { StyleSheet } from 'react-native';
-import { colors, shadows, spacing } from '../theme';
 
-export const categoryScreenStyles = StyleSheet.create({
+// We'll create a function that returns styles based on the theme
+export const createCategoryScreenStyles = (theme) => StyleSheet.create({
   // Container and layout styles
   container: {
     flex: 1,
-    backgroundColor: colors.background.main,
+    backgroundColor: theme.colors.background.main,
     paddingBottom: 60, // Make room for bottom tabs
   },
   scrollView: {
@@ -21,12 +21,12 @@ export const categoryScreenStyles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: theme.colors.text.primary,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.text.muted,
+    color: theme.colors.text.muted,
   },
   
   // List styles
@@ -38,17 +38,17 @@ export const categoryScreenStyles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background.card,
+    backgroundColor: theme.colors.background.card,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    ...shadows.small,
+    ...theme.shadows.small,
   },
   iconContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: `${colors.primary}10`,
+    backgroundColor: `${theme.colors.primary}10`,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -59,17 +59,17 @@ export const categoryScreenStyles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: theme.colors.text.primary,
     marginBottom: 4,
   },
   cardDescription: {
     fontSize: 14,
-    color: colors.text.muted,
+    color: theme.colors.text.muted,
   },
   
   // Points container
   pointsContainer: {
-    backgroundColor: `${colors.text.light}20`,
+    backgroundColor: `${theme.colors.text.light}20`,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 20,
@@ -77,12 +77,12 @@ export const categoryScreenStyles = StyleSheet.create({
   pointsText: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.text.secondary,
+    color: theme.colors.text.secondary,
   },
   
   // Premium badge
   premiumBadge: {
-    backgroundColor: `${colors.status.warning}30`,
+    backgroundColor: `${theme.colors.status.warning}30`,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -92,7 +92,7 @@ export const categoryScreenStyles = StyleSheet.create({
   premiumText: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.accent,
+    color: theme.colors.accent,
   },
   
   // Empty state
@@ -103,7 +103,7 @@ export const categoryScreenStyles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: colors.text.light,
+    color: theme.colors.text.light,
     textAlign: 'center',
   },
 });

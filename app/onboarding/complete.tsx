@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { CircleCheck as CheckCircle, ArrowRight } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { saveUserData } from '@/utils/storage';
+import { colors } from '@/styles/theme';
 
 export default function CompleteScreen() {
   const params = useLocalSearchParams();
@@ -44,7 +45,7 @@ export default function CompleteScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#FFE5E5', '#FAFAFA']} style={styles.background}>
+      <LinearGradient colors={colors.gradient.primary} style={styles.background}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -53,7 +54,7 @@ export default function CompleteScreen() {
             {/* Success Icon */}
             <View style={styles.iconContainer}>
               <LinearGradient
-                colors={['#10B981', '#059669']}
+                colors={colors.gradient.primary}
                 style={styles.successCircle}
               >
                 <CheckCircle size={64} color="#FFFFFF" />
@@ -118,7 +119,7 @@ export default function CompleteScreen() {
               onPress={handleGetStarted}
             >
               <LinearGradient
-                colors={['#FF6B6B', '#FF8E53']}
+                colors={colors.gradient.primary}
                 style={styles.buttonGradient}
               >
                 <Text style={styles.buttonText}>Start My Journey</Text>

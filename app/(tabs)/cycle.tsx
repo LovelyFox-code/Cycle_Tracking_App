@@ -22,6 +22,7 @@ import {
   getPhaseForDay,
   calculateCycleDay,
 } from '@/utils/cycleCalculations';
+import { useTheme } from '@/hooks/useTheme';
 
 type UserData = {
   lastPeriodDate: string;
@@ -30,6 +31,7 @@ type UserData = {
 };
 
 export default function CycleScreen() {
+  const { theme } = useTheme();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   type CalendarDay = {
@@ -103,28 +105,31 @@ export default function CycleScreen() {
   const getPhaseColor = (phase: string) => {
     switch (phase) {
       case 'menstrual':
-        return '#FF6B6B';
+        return theme.colors.phase.menstrual;
       case 'follicular':
-        return '#FFD93D';
+        return theme.colors.phase.follicular;
       case 'ovulation':
-        return '#FF1744';
+        return theme.colors.phase.ovulation;
       case 'luteal':
-        return '#8E24AA';
+        return theme.colors.phase.luteal;
       default:
-        return '#E5E7EB';
+        return theme.colors.text.light;
     }
   };
 
   const getPhaseIcon = (phase: string) => {
+    const iconSize = theme.typography.fontSize.xl;
+    const iconColor = theme.colors.background.card;
+
     switch (phase) {
       case 'menstrual':
-        return <Droplets size={16} color="#FFFFFF" />;
+        return <Droplets size={iconSize} color={iconColor} />;
       case 'follicular':
-        return <Sun size={16} color="#FFFFFF" />;
+        return <Sun size={iconSize} color={iconColor} />;
       case 'ovulation':
-        return <Heart size={16} color="#FFFFFF" />;
+        return <Heart size={iconSize} color={iconColor} />;
       case 'luteal':
-        return <Moon size={16} color="#FFFFFF" />;
+        return <Moon size={iconSize} color={iconColor} />;
       default:
         return null;
     }
@@ -155,9 +160,14 @@ export default function CycleScreen() {
 
   if (!userData) {
     return (
-      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <SafeAreaView 
+        style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+        edges={['left', 'right']}
+      >
         <View style={styles.centerContent}>
-          <Text style={styles.loadingText}>Loading cycle data...</Text>
+          <Text style={[styles.loadingText, { color: theme.colors.text.muted }]}>
+            Loading cycle data...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -169,27 +179,30 @@ export default function CycleScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+      edges={['left', 'right']}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Cycle Calendar</Text>
-          <Text style={styles.subtitle}>Track your phases and patterns</Text>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Cycle Calendar</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>Track your phases and patterns</Text>
         </View>
 
         {/* Current Phase Info */}
         <LinearGradient
-          colors={['#FFE5E5', '#FFCCCB']}
-          style={styles.currentPhaseCard}
+          colors={[theme.colors.background.highlight, theme.colors.background.highlight]}
+          style={[styles.currentPhaseCard, { ...theme.shadows.medium }]}
         >
           <View style={styles.phaseRow}>
             {getPhaseIcon(currentPhase)}
-            <Text style={styles.currentPhaseText}>
+            <Text style={[styles.currentPhaseText, { color: theme.colors.text.primary }]}>
               {currentPhase?.charAt(0).toUpperCase() + currentPhase?.slice(1)}{' '}
               Phase
             </Text>
           </View>
-          <Text style={styles.cycleInfo}>
+          <Text style={[styles.cycleInfo, { color: theme.colors.text.muted }]}>
             Cycle Length: {userData.cycleLength} days
           </Text>
         </LinearGradient>
@@ -198,27 +211,36 @@ export default function CycleScreen() {
         <View style={styles.calendarHeader}>
           <TouchableOpacity
             onPress={() => navigateMonth(-1)}
-            style={styles.navButton}
+            style={[styles.navButton, { 
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.small
+            }]}
           >
-            <ChevronLeft size={24} color="#6B7280" />
+            <ChevronLeft size={24} color={theme.colors.text.muted} />
           </TouchableOpacity>
-          <Text style={styles.monthYear}>
+          <Text style={[styles.monthYear, { color: theme.colors.text.primary }]}>
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </Text>
           <TouchableOpacity
             onPress={() => navigateMonth(1)}
-            style={styles.navButton}
+            style={[styles.navButton, { 
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.small
+            }]}
           >
-            <ChevronRight size={24} color="#6B7280" />
+            <ChevronRight size={24} color={theme.colors.text.muted} />
           </TouchableOpacity>
         </View>
 
         {/* Calendar Grid */}
-        <View style={styles.calendar}>
+        <View style={[styles.calendar, { 
+          backgroundColor: theme.colors.background.card,
+          ...theme.shadows.medium
+        }]}>
           {/* Day headers */}
           <View style={styles.dayHeaders}>
             {dayNames.map((day) => (
-              <Text key={day} style={styles.dayHeader}>
+              <Text key={day} style={[styles.dayHeader, { color: theme.colors.text.muted }]}>
                 {day}
               </Text>
             ))}
@@ -232,15 +254,16 @@ export default function CycleScreen() {
                   style={[
                     styles.dayCircle,
                     day.phase && { backgroundColor: getPhaseColor(day.phase) },
-                    day.isToday && styles.todayCircle,
+                    day.isToday && [styles.todayCircle, { borderColor: theme.colors.primary }],
                     !day.isCurrentMonth && styles.otherMonth,
                   ]}
                 >
                   <Text
                     style={[
                       styles.dayText,
-                      day.phase && styles.phaseText,
-                      !day.isCurrentMonth && styles.otherMonthText,
+                      { color: theme.colors.text.primary },
+                      day.phase && [styles.phaseText, { color: theme.colors.background.card }],
+                      !day.isCurrentMonth && [styles.otherMonthText, { color: theme.colors.text.light }],
                       day.isToday && styles.todayText,
                     ]}
                   >
@@ -248,7 +271,9 @@ export default function CycleScreen() {
                   </Text>
                 </View>
                 {day.cycleDay > 0 && day.isCurrentMonth && (
-                  <Text style={styles.cycleDayText}>C{day.cycleDay}</Text>
+                  <Text style={[styles.cycleDayText, { color: theme.colors.text.muted }]}>
+                    C{day.cycleDay}
+                  </Text>
                 )}
               </View>
             ))}
@@ -256,8 +281,11 @@ export default function CycleScreen() {
         </View>
 
         {/* Phase Legend */}
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>Phase Legend</Text>
+        <View style={[styles.legend, { 
+          backgroundColor: theme.colors.background.card,
+          ...theme.shadows.medium
+        }]}>
+          <Text style={[styles.legendTitle, { color: theme.colors.text.primary }]}>Phase Legend</Text>
           <View style={styles.legendGrid}>
             {[
               {
@@ -290,7 +318,7 @@ export default function CycleScreen() {
                 >
                   {item.icon}
                 </View>
-                <Text style={styles.legendText}>{item.name}</Text>
+                <Text style={[styles.legendText, { color: theme.colors.text.muted }]}>{item.name}</Text>
               </View>
             ))}
           </View>
@@ -303,7 +331,6 @@ export default function CycleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   centerContent: {
     flex: 1,
@@ -312,32 +339,24 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6B7280',
   },
   header: {
-    padding: 20,
-    paddingTop: 10,
+    padding: 24,
+    paddingTop: 8,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
   },
   currentPhaseCard: {
-    margin: 20,
-    marginTop: 10,
-    padding: 20,
+    margin: 24,
+    marginTop: 8,
+    padding: 24,
     borderRadius: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   phaseRow: {
     flexDirection: 'row',
@@ -347,45 +366,30 @@ const styles = StyleSheet.create({
   currentPhaseText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
     marginLeft: 8,
   },
   cycleInfo: {
     fontSize: 14,
-    color: '#6B7280',
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingHorizontal: 24,
+    marginBottom: 24,
   },
   navButton: {
-    padding: 12,
+    padding: 8,
     borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   monthYear: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
   },
   calendar: {
-    marginHorizontal: 20,
-    backgroundColor: '#FFFFFF',
+    marginHorizontal: 24,
     borderRadius: 16,
     padding: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   dayHeaders: {
     flexDirection: 'row',
@@ -396,7 +400,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -405,7 +408,7 @@ const styles = StyleSheet.create({
   dayContainer: {
     width: '14.28%',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   dayCircle: {
     width: 36,
@@ -417,7 +420,6 @@ const styles = StyleSheet.create({
   },
   todayCircle: {
     borderWidth: 2,
-    borderColor: '#FF6B6B',
   },
   otherMonth: {
     opacity: 0.3,
@@ -425,10 +427,8 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#1F2937',
   },
   phaseText: {
-    color: '#FFFFFF',
     fontWeight: '600',
   },
   otherMonthText: {
@@ -438,25 +438,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   cycleDayText: {
-    fontSize: 10,
-    color: '#6B7280',
+    fontSize: 12,
     marginTop: 2,
   },
   legend: {
-    margin: 20,
-    backgroundColor: '#FFFFFF',
+    margin: 24,
     borderRadius: 16,
     padding: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   legendTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 16,
   },
   legendGrid: {
@@ -468,7 +460,7 @@ const styles = StyleSheet.create({
     width: '48%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   legendCircle: {
     width: 24,
@@ -480,6 +472,5 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 14,
-    color: '#6B7280',
   },
 });

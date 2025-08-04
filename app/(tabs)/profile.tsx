@@ -3,8 +3,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Settings, Bell, HelpCircle, LogOut } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { clearUserData } from '@/utils/storage';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/common';
 
 export default function ProfileScreen() {
+  const { theme } = useTheme();
+  
   // Mock user data - in a real app, this would come from a state management system or API
   const userData = {
     name: "Alina",
@@ -28,35 +32,55 @@ export default function ProfileScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+      edges={['left', 'right']}
+    >
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Your Profile</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Your Profile</Text>
         </View>
         
         {/* User Profile Card */}
-        <View style={styles.profileCard}>
+        <View style={[styles.profileCard, { 
+          backgroundColor: theme.colors.background.card,
+          ...theme.shadows.small
+        }]}>
           <Image source={userData.profileImage} style={styles.profileImage} />
           <View style={styles.profileInfo}>
-            <Text style={styles.userName}>{userData.name}</Text>
-            <Text style={styles.userEmail}>{userData.email}</Text>
-            <Text style={styles.memberSince}>{userData.joinDate}</Text>
+            <Text style={[styles.userName, { color: theme.colors.text.primary }]}>{userData.name}</Text>
+            <Text style={[styles.userEmail, { color: theme.colors.text.muted }]}>{userData.email}</Text>
+            <Text style={[styles.memberSince, { color: theme.colors.text.light }]}>{userData.joinDate}</Text>
           </View>
         </View>
         
+        {/* Theme Settings */}
+        <View style={[styles.themeSection, { 
+          backgroundColor: theme.colors.background.card,
+          ...theme.shadows.small
+        }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Appearance</Text>
+          <ThemeToggle showBrandOptions={true} />
+        </View>
+        
         {/* Subscription Banner */}
-        <TouchableOpacity style={styles.subscriptionBanner}>
+        <TouchableOpacity style={[styles.subscriptionBanner, { backgroundColor: theme.colors.background.highlight }]}>
           <View style={styles.subscriptionContent}>
-            <Text style={styles.subscriptionTitle}>Upgrade to Premium</Text>
-            <Text style={styles.subscriptionDescription}>Get unlimited access to all features</Text>
+            <Text style={[styles.subscriptionTitle, { color: theme.colors.text.primary }]}>Upgrade to Premium</Text>
+            <Text style={[styles.subscriptionDescription, { color: theme.colors.text.secondary }]}>
+              Get unlimited access to all features
+            </Text>
           </View>
-          <View style={styles.subscriptionButton}>
+          <View style={[styles.subscriptionButton, { backgroundColor: theme.colors.primary }]}>
             <Text style={styles.subscriptionButtonText}>Upgrade</Text>
           </View>
         </TouchableOpacity>
         
         {/* Menu Items */}
-        <View style={styles.menuContainer}>
+        <View style={[styles.menuContainer, { 
+          backgroundColor: theme.colors.background.card,
+          ...theme.shadows.small
+        }]}>
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -64,19 +88,20 @@ export default function ProfileScreen() {
                 key={index} 
                 style={[
                   styles.menuItem, 
+                  { borderBottomColor: theme.colors.background.highlight },
                   index === menuItems.length - 1 ? styles.menuItemLast : null
                 ]}
                 onPress={item.onPress}
               >
-                <Icon size={22} color="#4B5563" style={styles.menuIcon} />
-                <Text style={styles.menuLabel}>{item.label}</Text>
+                <Icon size={22} color={theme.colors.text.secondary} style={styles.menuIcon} />
+                <Text style={[styles.menuLabel, { color: theme.colors.text.secondary }]}>{item.label}</Text>
               </TouchableOpacity>
             );
           })}
         </View>
         
         {/* App Version */}
-        <Text style={styles.versionText}>Version 1.0.0</Text>
+        <Text style={[styles.versionText, { color: theme.colors.text.light }]}>Version 1.0.0</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -85,7 +110,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
     paddingBottom: 60, // Make room for bottom tabs
   },
   scrollView: {
@@ -98,20 +122,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
   },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     marginHorizontal: 16,
     borderRadius: 12,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
   },
   profileImage: {
     width: 70,
@@ -125,23 +142,30 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: '#6B7280',
     marginBottom: 4,
   },
   memberSince: {
     fontSize: 12,
-    color: '#9CA3AF',
+  },
+  themeSection: {
+    marginHorizontal: 16,
+    marginTop: 24,
+    borderRadius: 12,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 16,
   },
   subscriptionBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FEF3C7',
     marginHorizontal: 16,
     marginTop: 24,
     borderRadius: 12,
@@ -153,16 +177,13 @@ const styles = StyleSheet.create({
   subscriptionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#92400E',
     marginBottom: 4,
   },
   subscriptionDescription: {
     fontSize: 14,
-    color: '#92400E',
     opacity: 0.8,
   },
   subscriptionButton: {
-    backgroundColor: '#F59E0B',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -173,16 +194,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   menuContainer: {
-    backgroundColor: 'white',
     marginHorizontal: 16,
     marginTop: 24,
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
   },
   menuItem: {
     flexDirection: 'row',
@@ -190,7 +205,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   menuItemLast: {
     borderBottomWidth: 0,
@@ -200,11 +214,9 @@ const styles = StyleSheet.create({
   },
   menuLabel: {
     fontSize: 16,
-    color: '#4B5563',
   },
   versionText: {
     textAlign: 'center',
-    color: '#9CA3AF',
     fontSize: 12,
     marginTop: 24,
     marginBottom: 24,

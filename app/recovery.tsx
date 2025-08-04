@@ -4,11 +4,13 @@ import { Heart } from 'lucide-react-native';
 import { useContext } from 'react';
 import { RecoveryFilterContext } from '@/app/_layout';
 import { Link } from 'expo-router';
-import { colors } from '@/styles/theme';
-import { categoryScreenStyles as styles } from '@/styles/screens';
+import { useTheme } from '@/hooks/useTheme';
+import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
 
 export default function RecoveryScreen() {
+  const { theme } = useTheme();
   const { activeFilter } = useContext(RecoveryFilterContext);
+  const styles = createCategoryScreenStyles(theme);
 
   // Filter recovery items based on the active filter
   const filteredItems = recoveryItems.filter((item) => {
@@ -47,7 +49,7 @@ export default function RecoveryScreen() {
               <Link key={index} href={`/recovery/${item.slug}`} asChild>
                 <TouchableOpacity key={index} style={styles.card}>
                   <View style={styles.iconContainer}>
-                    <Heart size={24} color={colors.primary} />
+                    <Heart size={24} color={theme.colors.primary} />
                   </View>
                   <View style={styles.cardInfo}>
                     <Text style={styles.cardTitle}>{item.title}</Text>

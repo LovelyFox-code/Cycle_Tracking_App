@@ -4,9 +4,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Trophy, Star, Target, TrendingUp, Award, Flame } from 'lucide-react-native';
 import { getUserData } from '@/utils/storage';
+import { useTheme } from '@/hooks/useTheme';
+
+type UserData = {
+  totalPoints?: number;
+  [key: string]: any;
+};
 
 export default function AchievementsScreen() {
-  const [userData, setUserData] = useState(null);
+  const { theme } = useTheme();
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [level, setLevel] = useState(1);
   const [progress, setProgress] = useState(0);
 
@@ -30,49 +37,49 @@ export default function AchievementsScreen() {
       id: '1',
       title: 'First Steps',
       description: 'Complete your first workout',
-      icon: <Target size={24} color="#FFFFFF" />,
+      icon: <Target size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: (userData?.totalPoints || 0) >= 5,
-      gradient: ['#FF6B6B', '#FF8E53'],
+      gradient: theme.colors.gradient.energy,
     },
     {
       id: '2',
       title: 'Nutrition Warrior',
       description: 'Log 5 meals',
-      icon: <Star size={24} color="#FFFFFF" />,
+      icon: <Star size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: (userData?.totalPoints || 0) >= 15,
-      gradient: ['#4ECDC4', '#44A08D'],
+      gradient: theme.colors.gradient.calm,
     },
     {
       id: '3',
       title: 'Consistent Tracker',
       description: 'Complete tasks for 7 days',
-      icon: <Flame size={24} color="#FFFFFF" />,
+      icon: <Flame size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: (userData?.totalPoints || 0) >= 70,
-      gradient: ['#FFD93D', '#FF6B6B'],
+      gradient: theme.colors.gradient.vitality,
     },
     {
       id: '4',
       title: 'Cycle Expert',
       description: 'Track one complete cycle',
-      icon: <Trophy size={24} color="#FFFFFF" />,
+      icon: <Trophy size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: (userData?.totalPoints || 0) >= 100,
-      gradient: ['#8E24AA', '#FF1744'],
+      gradient: theme.colors.gradient.strength,
     },
     {
       id: '5',
       title: 'Wellness Champion',
       description: 'Reach Level 5',
-      icon: <Award size={24} color="#FFFFFF" />,
+      icon: <Award size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: level >= 5,
-      gradient: ['#667eea', '#764ba2'],
+      gradient: theme.colors.gradient.calm,
     },
     {
       id: '6',
       title: 'Point Master',
       description: 'Earn 500 total points',
-      icon: <TrendingUp size={24} color="#FFFFFF" />,
+      icon: <TrendingUp size={theme.spacing.l} color={theme.colors.background.card} />,
       unlocked: (userData?.totalPoints || 0) >= 500,
-      gradient: ['#f093fb', '#f5576c'],
+      gradient: theme.colors.gradient.passion,
     },
   ];
 
@@ -80,53 +87,63 @@ export default function AchievementsScreen() {
     {
       label: 'Total Points',
       value: userData?.totalPoints || 0,
-      icon: <Star size={20} color="#FF6B6B" />,
+      icon: <Star size={theme.spacing.m} color={theme.colors.primary} />,
     },
     {
       label: 'Current Level',
       value: level,
-      icon: <Trophy size={20} color="#FF6B6B" />,
+      icon: <Trophy size={theme.spacing.m} color={theme.colors.primary} />,
     },
     {
       label: 'Achievements',
       value: achievements.filter(a => a.unlocked).length,
-      icon: <Award size={20} color="#FF6B6B" />,
+      icon: <Award size={theme.spacing.m} color={theme.colors.primary} />,
     },
     {
       label: 'Progress to Next',
       value: `${progress}/100`,
-      icon: <Target size={20} color="#FF6B6B" />,
+      icon: <Target size={theme.spacing.m} color={theme.colors.primary} />,
     },
   ];
 
   if (!userData) {
     return (
-      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <SafeAreaView 
+        style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+        edges={['left', 'right']}
+      >
         <View style={styles.centerContent}>
-          <Text style={styles.loadingText}>Loading your progress...</Text>
+          <Text style={[styles.loadingText, { color: theme.colors.text.muted }]}>
+            Loading your progress...
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+      edges={['left', 'right']}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Your Progress</Text>
-          <Text style={styles.subtitle}>Celebrate your wellness journey</Text>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Your Progress</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>
+            Celebrate your wellness journey
+          </Text>
         </View>
 
         {/* Level Progress Card */}
         <LinearGradient
-          colors={['#FF6B6B', '#FF8E53']}
-          style={styles.levelCard}
+          colors={theme.colors.gradient.energy}
+          style={[styles.levelCard, { ...theme.shadows.medium }]}
         >
           <View style={styles.levelHeader}>
             <View style={styles.levelIcon}>
-              <Trophy size={32} color="#FFFFFF" />
+              <Trophy size={theme.spacing.xl} color={theme.colors.background.card} />
             </View>
             <View style={styles.levelInfo}>
               <Text style={styles.levelText}>Level {level}</Text>
@@ -146,35 +163,60 @@ export default function AchievementsScreen() {
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           {stats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
+            <View 
+              key={index} 
+              style={[
+                styles.statCard, 
+                { 
+                  backgroundColor: theme.colors.background.card,
+                  ...theme.shadows.small
+                }
+              ]}
+            >
               <View style={styles.statIcon}>
                 {stat.icon}
               </View>
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
+              <Text style={[styles.statValue, { color: theme.colors.text.primary }]}>
+                {stat.value}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.muted }]}>
+                {stat.label}
+              </Text>
             </View>
           ))}
         </View>
 
         {/* Achievements */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Achievements</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
+            Achievements
+          </Text>
           <View style={styles.achievementsGrid}>
             {achievements.map((achievement) => (
               <LinearGradient
                 key={achievement.id}
-                colors={achievement.unlocked ? achievement.gradient : ['#E5E7EB', '#D1D5DB']}
-                style={[styles.achievementCard, !achievement.unlocked && styles.lockedCard]}
+                colors={achievement.unlocked ? achievement.gradient : [theme.colors.text.light, theme.colors.text.muted]}
+                style={[
+                  styles.achievementCard, 
+                  !achievement.unlocked && styles.lockedCard,
+                  { ...theme.shadows.medium }
+                ]}
               >
                 <View style={styles.achievementIcon}>
                   {achievement.unlocked ? achievement.icon : 
-                    <Target size={24} color="#9CA3AF" />
+                    <Target size={theme.spacing.l} color={theme.colors.text.light} />
                   }
                 </View>
-                <Text style={[styles.achievementTitle, !achievement.unlocked && styles.lockedText]}>
+                <Text style={[
+                  styles.achievementTitle, 
+                  !achievement.unlocked && [styles.lockedText, { color: theme.colors.text.light }]
+                ]}>
                   {achievement.title}
                 </Text>
-                <Text style={[styles.achievementDescription, !achievement.unlocked && styles.lockedText]}>
+                <Text style={[
+                  styles.achievementDescription, 
+                  !achievement.unlocked && [styles.lockedText, { color: theme.colors.text.light }]
+                ]}>
                   {achievement.description}
                 </Text>
                 {achievement.unlocked && (
@@ -188,9 +230,17 @@ export default function AchievementsScreen() {
         </View>
 
         {/* Motivational Section */}
-        <View style={styles.motivationCard}>
-          <Text style={styles.motivationTitle}>🌟 Keep Going!</Text>
-          <Text style={styles.motivationText}>
+        <View style={[
+          styles.motivationCard, 
+          { 
+            backgroundColor: theme.colors.background.card,
+            ...theme.shadows.small
+          }
+        ]}>
+          <Text style={[styles.motivationTitle, { color: theme.colors.text.primary }]}>
+            🌟 Keep Going!
+          </Text>
+          <Text style={[styles.motivationText, { color: theme.colors.text.muted }]}>
             Every task you complete brings you closer to your wellness goals. 
             Small consistent actions create lasting change.
           </Text>
@@ -203,10 +253,9 @@ export default function AchievementsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   tabSpacing: {
-    height: 60, // Add extra space at the top to account for tabs
+    height: 64, // Add extra space at the top to account for tabs
   },
   centerContent: {
     flex: 1,
@@ -215,37 +264,29 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6B7280',
   },
   header: {
-    padding: 20,
-    paddingTop: 10,
+    padding: 24,
+    paddingTop: 8,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
   },
   levelCard: {
-    margin: 20,
-    marginTop: 10,
-    padding: 20,
+    margin: 24,
+    marginTop: 8,
+    padding: 24,
     borderRadius: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   levelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   levelIcon: {
     width: 60,
@@ -297,21 +338,15 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingHorizontal: 24,
+    marginBottom: 24,
   },
   statCard: {
     width: '48%',
-    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     margin: '1%',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   statIcon: {
     marginBottom: 8,
@@ -319,22 +354,19 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6B7280',
     textAlign: 'center',
   },
   section: {
-    padding: 20,
+    padding: 24,
     paddingTop: 0,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 16,
   },
   achievementsGrid: {
@@ -348,11 +380,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   lockedCard: {
     opacity: 0.6,
@@ -377,7 +404,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 18,
   },
   lockedText: {
     color: '#9CA3AF',
@@ -390,30 +417,22 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   unlockedText: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#FFFFFF',
     fontWeight: '600',
   },
   motivationCard: {
-    margin: 20,
-    backgroundColor: '#FFFFFF',
-    padding: 20,
+    margin: 24,
+    padding: 24,
     borderRadius: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   motivationTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 12,
   },
   motivationText: {
     fontSize: 16,
-    color: '#6B7280',
     lineHeight: 24,
   },
 });

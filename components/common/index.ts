@@ -6,3 +6,4 @@ export { default as ProgressBar } from './ProgressBar';
 export { default as ProgressSummary } from './ProgressSummary';
 export { default as RecommendationCard } from './RecommendationCard';
 export { default as SectionTitle } from './SectionTitle';
+export { default as ThemeToggle } from './ThemeToggle';

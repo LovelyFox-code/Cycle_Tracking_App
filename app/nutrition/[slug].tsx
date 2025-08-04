@@ -2,6 +2,7 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { useTheme } from '@/hooks/useTheme';
 
 // Recipe data - in a real app, this would come from an API or database
 const recipes = {
@@ -148,6 +149,7 @@ const recipes = {
 };
 
 export default function RecipeDetailScreen() {
+  const { theme } = useTheme();
   const { slug } = useLocalSearchParams();
   const recipeId = Array.isArray(slug) ? slug[0] : slug;
   
@@ -157,11 +159,11 @@ export default function RecipeDetailScreen() {
   // If recipe not found
   if (!recipe) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Recipe not found</Text>
+          <Text style={[styles.errorText, { color: theme.colors.text.secondary }]}>Recipe not found</Text>
           <TouchableOpacity 
-            style={styles.backButton} 
+            style={[styles.backButton, { backgroundColor: theme.colors.primary }]} 
             onPress={() => router.back()}
           >
             <Text style={styles.backButtonText}>Go Back</Text>
@@ -172,23 +174,26 @@ export default function RecipeDetailScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-              <Stack.Screen 
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+      <Stack.Screen 
         options={{
           title: recipe.title,
           headerShown: false,
         }} 
       />
         
-        {/* Return Button */}
-        <View style={styles.returnButtonContainer}>
-          <TouchableOpacity 
-            style={styles.returnButton}
-            onPress={() => router.back()}
-          >
-            <ArrowLeft size={24} color="#000" />
-          </TouchableOpacity>
-        </View>
+      {/* Return Button */}
+      <View style={styles.returnButtonContainer}>
+        <TouchableOpacity 
+          style={[styles.returnButton, { 
+            backgroundColor: `${theme.colors.background.card}E6`,
+            ...theme.shadows.small
+          }]}
+          onPress={() => router.back()}
+        >
+          <ArrowLeft size={24} color={theme.colors.text.primary} />
+        </TouchableOpacity>
+      </View>
       
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Hero Image */}
@@ -199,45 +204,47 @@ export default function RecipeDetailScreen() {
         />
         
         {/* Recipe Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{recipe.title}</Text>
-          <Text style={styles.description}>{recipe.description}</Text>
+        <View style={[styles.titleContainer, { borderBottomColor: theme.colors.background.highlight }]}>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>{recipe.title}</Text>
+          <Text style={[styles.description, { color: theme.colors.text.muted }]}>{recipe.description}</Text>
           
           {/* Optional Info */}
           <View style={styles.infoContainer}>
             {recipe.calories && (
               <View style={styles.infoItem}>
-                <Text style={styles.infoLabel}>Calories</Text>
-                <Text style={styles.infoValue}>{recipe.calories}</Text>
+                <Text style={[styles.infoLabel, { color: theme.colors.text.muted }]}>Calories</Text>
+                <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>{recipe.calories}</Text>
               </View>
             )}
             {recipe.prepTime && (
               <View style={styles.infoItem}>
-                <Text style={styles.infoLabel}>Prep Time</Text>
-                <Text style={styles.infoValue}>{recipe.prepTime}</Text>
+                <Text style={[styles.infoLabel, { color: theme.colors.text.muted }]}>Prep Time</Text>
+                <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>{recipe.prepTime}</Text>
               </View>
             )}
           </View>
         </View>
         
         {/* Ingredients */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ingredients</Text>
+        <View style={[styles.section, { borderBottomColor: theme.colors.background.highlight }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Ingredients</Text>
           {recipe.ingredients.map((ingredient, index) => (
             <View key={index} style={styles.listItem}>
-              <View style={styles.bullet} />
-              <Text style={styles.listItemText}>{ingredient}</Text>
+              <View style={[styles.bullet, { backgroundColor: theme.colors.primary }]} />
+              <Text style={[styles.listItemText, { color: theme.colors.text.secondary }]}>{ingredient}</Text>
             </View>
           ))}
         </View>
         
         {/* Instructions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Instructions</Text>
+        <View style={[styles.section, { borderBottomColor: theme.colors.background.highlight }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Instructions</Text>
           {recipe.instructions.map((instruction, index) => (
             <View key={index} style={styles.listItem}>
-              <Text style={styles.stepNumber}>{index + 1}</Text>
-              <Text style={styles.listItemText}>{instruction}</Text>
+              <Text style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
+                {index + 1}
+              </Text>
+              <Text style={[styles.listItemText, { color: theme.colors.text.secondary }]}>{instruction}</Text>
             </View>
           ))}
         </View>
@@ -249,7 +256,6 @@ export default function RecipeDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
@@ -264,17 +270,14 @@ const styles = StyleSheet.create({
   titleContainer: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    color: '#6B7280',
     marginBottom: 16,
   },
   infoContainer: {
@@ -286,22 +289,18 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: '#6B7280',
   },
   infoValue: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
   },
   section: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 16,
   },
   listItem: {
@@ -313,7 +312,6 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF6B6B',
     marginTop: 8,
     marginRight: 10,
   },
@@ -321,7 +319,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#FF6B6B',
     color: 'white',
     textAlign: 'center',
     lineHeight: 24,
@@ -330,7 +327,6 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 16,
-    color: '#4B5563',
     flex: 1,
   },
   errorContainer: {
@@ -341,13 +337,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: '#4B5563',
     marginBottom: 20,
   },
   backButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#FF6B6B',
     borderRadius: 8,
   },
   backButtonText: {
@@ -364,13 +358,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
 });

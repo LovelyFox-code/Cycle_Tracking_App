@@ -4,11 +4,13 @@ import { Utensils } from 'lucide-react-native';
 import { useContext } from 'react';
 import { NutritionFilterContext } from '@/app/_layout';
 import { router } from 'expo-router';
-import { colors } from '@/styles/theme';
-import { categoryScreenStyles as styles } from '@/styles/screens';
+import { useTheme } from '@/hooks/useTheme';
+import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
 
 export default function NutritionScreen() {
+  const { theme } = useTheme();
   const { activeFilter } = useContext(NutritionFilterContext);
+  const styles = createCategoryScreenStyles(theme);
 
   // Filter nutrition items based on the active filter
   const filteredItems = nutritionItems.filter((item) => {
@@ -50,7 +52,7 @@ export default function NutritionScreen() {
                 onPress={() => router.push(`/nutrition/${item.slug}`)}
               >
                 <View style={styles.iconContainer}>
-                  <Utensils size={24} color={colors.primary} />
+                  <Utensils size={24} color={theme.colors.primary} />
                 </View>
                 <View style={styles.cardInfo}>
                   <Text style={styles.cardTitle}>{item.title}</Text>

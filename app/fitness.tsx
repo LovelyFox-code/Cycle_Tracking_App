@@ -4,8 +4,8 @@ import { Dumbbell } from 'lucide-react-native';
 import { useContext } from 'react';
 import { FitnessFilterContext } from '@/app/_layout';
 import { Link } from 'expo-router';
-import { colors } from '@/styles/theme';
-import { categoryScreenStyles as styles } from '@/styles/screens';
+import { useTheme } from '@/hooks/useTheme';
+import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
 
 const workouts = [
   {
@@ -83,7 +83,9 @@ const workouts = [
 ];
 
 export default function FitnessScreen() {
+  const { theme } = useTheme();
   const { activeFilter } = useContext(FitnessFilterContext);
+  const styles = createCategoryScreenStyles(theme);
 
   const filteredWorkouts = workouts.filter((workout) => {
     if (activeFilter === 'by_phase')
@@ -121,7 +123,7 @@ export default function FitnessScreen() {
               <Link key={index} href={`/fitness/${workout.slug}`} asChild>
                 <TouchableOpacity style={styles.card}>
                   <View style={styles.iconContainer}>
-                    <Dumbbell size={24} color={colors.primary} />
+                    <Dumbbell size={24} color={theme.colors.primary} />
                   </View>
                   <View style={styles.cardInfo}>
                     <Text style={styles.cardTitle}>{workout.title}</Text>

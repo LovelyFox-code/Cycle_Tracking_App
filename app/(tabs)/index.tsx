@@ -13,17 +13,26 @@ import {
   Heart,
   Droplets,
   Sun,
-  Moon,
   CircleCheck as CheckCircle,
-  Plus,
   Leaf,
 } from 'lucide-react-native';
+import {
+  PanGestureHandler,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  runOnJS,
+} from 'react-native-reanimated';
 import { getUserData, updateUserPoints, completeTask } from '@/utils/storage';
 import {
   getCurrentPhase,
   getPhaseInfo,
   calculateDaysInPhase,
 } from '@/utils/cycleCalculations';
+import { useTheme } from '@/hooks/useTheme';
 
 type UserData = {
   name?: string;
@@ -34,16 +43,32 @@ type UserData = {
 };
 
 export default function Dashboard() {
+  const { theme } = useTheme();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
   const [phaseInfo, setPhaseInfo] = useState<any>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [cycleDay, setCycleDay] = useState(1);
   const [cycleLength, setCycleLength] = useState(28);
+  const positionX = useSharedValue(0);
+  const progressBarWidth = useSharedValue(0);
 
   useEffect(() => {
     loadUserData();
   }, []);
+
+  // Update position when cycle day changes or when progress bar width is set
+  useEffect(() => {
+    // Use a timeout to ensure the layout is complete
+    const timer = setTimeout(() => {
+      if (progressBarWidth.value > 0) {
+        const position = (progressBarWidth.value * getCyclePosition()) / 100;
+        positionX.value = position;
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [cycleDay, cycleLength, progressBarWidth.value]);
 
   const loadUserData = async () => {
     const data = await getUserData();
@@ -86,36 +111,126 @@ export default function Dashboard() {
     loadUserData(); // Refresh data
   };
 
-  const getPhaseIcon = (phase: string) => {
+  const getPhaseColor = (phase: string): string => {
     switch (phase) {
       case 'menstrual':
-        return <Droplets size={24} color="#FF6B6B" />;
+        return theme.colors.phase.menstrual;
       case 'follicular':
-        return <Sun size={24} color="#FFD93D" />;
+        return theme.colors.phase.follicular;
       case 'ovulation':
-        return <Heart size={24} color="#FF1744" />;
+        return theme.colors.phase.ovulation;
       case 'luteal':
-        return <Leaf size={24} color="#8E24AA" />;
+        return theme.colors.phase.luteal;
       default:
-        return <Heart size={24} color="#FF6B6B" />;
+        return theme.colors.primary;
     }
   };
 
-  const getCycleProgressBarColors = (): [string, string, ...string[]] => {
-    return ['#F9A826', '#FF6B6B', '#4FC3F7', '#8E24AA'];
+  const getPhaseIcon = (phase: string) => {
+    const iconSize = theme.spacing.l + theme.spacing.xs;
+    switch (phase) {
+      case 'menstrual':
+        return <Droplets size={iconSize} color={theme.colors.phase.menstrual} />;
+      case 'follicular':
+        return <Sun size={iconSize} color={theme.colors.phase.follicular} />;
+      case 'ovulation':
+        return <Heart size={iconSize} color={theme.colors.phase.ovulation} />;
+      case 'luteal':
+        return <Leaf size={iconSize} color={theme.colors.phase.luteal} />;
+      default:
+        return <Heart size={iconSize} color={theme.colors.primary} />;
+    }
+  };
+
+  const getCycleProgressBarColors = (): [string, string] => {
+    return theme.colors.gradient.primary;
   };
 
   const getCyclePosition = () => {
     return (cycleDay / cycleLength) * 100;
   };
 
+  // Local implementation of getPhaseForDay
+  const getPhaseForDay = (cycleDay: number, cycleLength: number): string => {
+    if (cycleDay <= 5) {
+      return 'menstrual';
+    } else if (cycleDay <= Math.floor(cycleLength / 2) - 1) {
+      return 'follicular';
+    } else if (cycleDay === Math.floor(cycleLength / 2)) {
+      return 'ovulation';
+    } else {
+      return 'luteal';
+    }
+  };
+
+  const updateCycleDayFromPosition = (positionPercent: number) => {
+    const newCycleDay = Math.max(
+      1,
+      Math.min(cycleLength, Math.round((positionPercent / 100) * cycleLength))
+    );
+
+    if (newCycleDay !== cycleDay) {
+      setCycleDay(newCycleDay);
+
+      // Update phase based on new cycle day
+      if (userData) {
+        // Calculate the phase based on the new cycle day
+        const newPhase = getPhaseForDay(newCycleDay, userData.cycleLength);
+        setCurrentPhase(newPhase);
+        setPhaseInfo(getPhaseInfo(newPhase));
+      }
+    }
+  };
+
+  const onGestureEvent = useAnimatedGestureHandler({
+    onStart: (event, ctx: any) => {
+      // Store initial position and touch position
+      ctx.startX = positionX.value;
+      ctx.touchX = event.absoluteX;
+    },
+    onActive: (event, ctx: any) => {
+      // Calculate new position based on absolute movement
+      const dx = event.absoluteX - ctx.touchX;
+      const newPosition = ctx.startX + dx;
+
+      // Clamp position to progress bar width (0 to progressBarWidth)
+      positionX.value = Math.max(
+        0,
+        Math.min(progressBarWidth.value, newPosition)
+      );
+    },
+    onEnd: (event) => {
+      if (progressBarWidth.value > 0) {
+        // Calculate percentage position (0-100%)
+        const positionPercent =
+          (positionX.value / progressBarWidth.value) * 100;
+        // Update cycle day based on position
+        runOnJS(updateCycleDayFromPosition)(positionPercent);
+      }
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      left: positionX.value,
+      transform: [{ translateX: -25 }], // Center the indicator (half of its width)
+    };
+  });
+
   if (!userData || !currentPhase || !phaseInfo) {
     return (
-      <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        <View style={styles.centerContent}>
-          <Text style={styles.loadingText}>Loading your cycle data...</Text>
-        </View>
-      </SafeAreaView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaView 
+          style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+          edges={['left', 'right']}
+        >
+          <View style={styles.centerContent}>
+            <Text style={[styles.loadingText, { color: theme.colors.text.muted }]}>
+              Loading your cycle data...
+            </Text>
+          </View>
+        </SafeAreaView>
+      </GestureHandlerRootView>
     );
   }
 
@@ -126,173 +241,242 @@ export default function Dashboard() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView 
+        style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+        edges={['left', 'right']}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.greeting}>
-            Hello, {userData.name || 'there'}!
-          </Text>
-          <Text style={styles.subtitle}>Let's sync with your cycle today</Text>
-        </View>
-
-        {/* Cycle Tracker Section */}
-        <View style={styles.cycleTrackerSection}>
-          <Text style={styles.cycleTrackerTitle}>Cycle Tracker</Text>
-
-          <View style={styles.cycleInfoRow}>
-            <Text style={styles.cycleInfoText}>Today</Text>
-            <Text style={styles.cycleInfoSeparator}>|</Text>
-            <Text style={styles.cycleInfoText}>Day {cycleDay}</Text>
-            <Text style={styles.cycleInfoSeparator}>|</Text>
-            <Text style={styles.cycleInfoText}>
-              {phaseInfo.name} {currentPhase === 'luteal' ? 'Fall' : 'Phase'}
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={[styles.greeting, { color: theme.colors.text.primary }]}>
+              Hello, {userData.name || 'there'}!
+            </Text>
+            <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>
+              Let's sync with your cycle today
             </Text>
           </View>
 
-          <Text style={styles.cycleMessage}>
-            You're steady and productive; enjoy the slower pace.
-          </Text>
+          {/* Cycle Tracker Section */}
+          <View style={[styles.cycleTrackerSection, { backgroundColor: theme.colors.background.highlight }]}>
+            <Text style={[styles.cycleTrackerTitle, { color: theme.colors.text.primary }]}>Cycle Tracker</Text>
 
-          {/* Phase Labels */}
-          <View style={styles.phaseLabelsContainer}>
-            <View style={styles.phaseLabel}>
-              <View style={[styles.phaseDot, { backgroundColor: '#F9A826' }]} />
-              <Text style={styles.phaseLabelText}>Luteal</Text>
+            <View style={styles.cycleInfoRow}>
+              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>Today</Text>
+              <Text style={[styles.cycleInfoSeparator, { color: theme.colors.text.light }]}>|</Text>
+              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>Day {cycleDay}</Text>
+              <Text style={[styles.cycleInfoSeparator, { color: theme.colors.text.light }]}>|</Text>
+              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>
+                {phaseInfo.name} {currentPhase === 'luteal' ? 'Fall' : 'Phase'}
+              </Text>
             </View>
-            <View style={styles.phaseLabel}>
-              <View style={[styles.phaseDot, { backgroundColor: '#4FC3F7' }]} />
-              <Text style={styles.phaseLabelText}>Menstruation</Text>
+
+            <Text style={[styles.cycleMessage, { color: theme.colors.text.secondary }]}>
+              You're steady and productive; enjoy the slower pace.
+            </Text>
+
+            {/* Phase Labels */}
+            <View style={styles.phaseLabelsContainer}>
+              <View style={styles.phaseLabel}>
+                <View
+                  style={[
+                    styles.phaseDot,
+                    { backgroundColor: theme.colors.phase.luteal },
+                  ]}
+                />
+                <Text style={[styles.phaseLabelText, { color: theme.colors.text.secondary }]}>Luteal</Text>
+              </View>
+              <View style={styles.phaseLabel}>
+                <View
+                  style={[
+                    styles.phaseDot,
+                    { backgroundColor: theme.colors.phase.menstrual },
+                  ]}
+                />
+                <Text style={[styles.phaseLabelText, { color: theme.colors.text.secondary }]}>Menstruation</Text>
+              </View>
+            </View>
+
+            {/* Progress Bar */}
+            <View
+              style={[styles.progressBarContainer, { backgroundColor: theme.colors.text.light }]}
+              onLayout={(event) => {
+                const width = event.nativeEvent.layout.width;
+                progressBarWidth.value = width;
+                // Initialize position based on cycle day
+                positionX.value = (width * getCyclePosition()) / 100;
+              }}
+            >
+              <LinearGradient
+                colors={getCycleProgressBarColors()}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.progressBar}
+              />
+
+              {/* Current Position Indicator - Always Draggable */}
+              <PanGestureHandler
+                onGestureEvent={onGestureEvent}
+                activeOffsetX={[-10, 10]}
+              >
+                <Animated.View
+                  style={[styles.positionIndicator, animatedStyle]}
+                >
+                  <View style={[
+                    styles.iconCircle, 
+                    styles.draggableIndicator, 
+                    { 
+                      backgroundColor: theme.colors.background.card,
+                      ...theme.shadows.medium
+                    }
+                  ]}>
+                    {getPhaseIcon(currentPhase)}
+                  </View>
+                </Animated.View>
+              </PanGestureHandler>
             </View>
           </View>
 
-          {/* Progress Bar */}
-          <View style={styles.progressBarContainer}>
-            <LinearGradient
-              colors={getCycleProgressBarColors()}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.progressBar}
-            />
+          {/* Today's Recommendations */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Today's Recommendations</Text>
 
-            {/* Current Position Indicator */}
-            <View
-              style={[
-                styles.positionIndicator,
-                { left: `${getCyclePosition()}%` },
-              ]}
-            >
-              <View style={styles.iconCircle}>
-                {getPhaseIcon(currentPhase)}
+            {/* Workout Card */}
+            <View style={[
+              styles.recommendationCard, 
+              { 
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small
+              }
+            ]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🏃‍♀️ Workout</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.completeButton,
+                    completedTasks.has('workout') && styles.completedButton,
+                  ]}
+                  onPress={() => handleTaskComplete('workout', 5)}
+                  disabled={completedTasks.has('workout')}
+                >
+                  <CheckCircle
+                    size={theme.spacing.l}
+                    color={
+                      completedTasks.has('workout')
+                        ? theme.colors.status.success
+                        : theme.colors.text.light
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.workout}</Text>
+            </View>
+
+            {/* Nutrition Card */}
+            <View style={[
+              styles.recommendationCard, 
+              { 
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small
+              }
+            ]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🍽️ Nutrition Focus</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.completeButton,
+                    completedTasks.has('nutrition') && styles.completedButton,
+                  ]}
+                  onPress={() => handleTaskComplete('nutrition', 3)}
+                  disabled={completedTasks.has('nutrition')}
+                >
+                  <CheckCircle
+                    size={theme.spacing.l}
+                    color={
+                      completedTasks.has('nutrition')
+                        ? theme.colors.status.success
+                        : theme.colors.text.light
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.nutrition}</Text>
+            </View>
+
+            {/* Recovery Card */}
+            <View style={[
+              styles.recommendationCard, 
+              { 
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small
+              }
+            ]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🧘‍♀️ Self-Care</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.completeButton,
+                    completedTasks.has('recovery') && styles.completedButton,
+                  ]}
+                  onPress={() => handleTaskComplete('recovery', 2)}
+                  disabled={completedTasks.has('recovery')}
+                >
+                  <CheckCircle
+                    size={theme.spacing.l}
+                    color={
+                      completedTasks.has('recovery')
+                        ? theme.colors.status.success
+                        : theme.colors.text.light
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.recovery}</Text>
+            </View>
+          </View>
+
+          {/* Progress Summary */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Your Progress</Text>
+            <View style={[
+              styles.progressCard, 
+              { 
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small
+              }
+            ]}>
+              <View style={styles.progressRow}>
+                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Total Points</Text>
+                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                  {userData.totalPoints || 0}
+                </Text>
+              </View>
+              <View style={styles.progressRow}>
+                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Current Level</Text>
+                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                  Level {Math.floor((userData.totalPoints || 0) / 100) + 1}
+                </Text>
+              </View>
+              <View style={styles.progressRow}>
+                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Tasks Today</Text>
+                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                  {completedTasks.size}/3
+                </Text>
               </View>
             </View>
           </View>
-        </View>
-
-        {/* Today's Recommendations */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Today's Recommendations</Text>
-
-          {/* Workout Card */}
-          <View style={styles.recommendationCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>🏃‍♀️ Workout</Text>
-              <TouchableOpacity
-                style={[
-                  styles.completeButton,
-                  completedTasks.has('workout') && styles.completedButton,
-                ]}
-                onPress={() => handleTaskComplete('workout', 5)}
-                disabled={completedTasks.has('workout')}
-              >
-                <CheckCircle
-                  size={20}
-                  color={completedTasks.has('workout') ? '#4CAF50' : '#9CA3AF'}
-                />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.cardContent}>{phaseInfo.workout}</Text>
-          </View>
-
-          {/* Nutrition Card */}
-          <View style={styles.recommendationCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>🍽️ Nutrition Focus</Text>
-              <TouchableOpacity
-                style={[
-                  styles.completeButton,
-                  completedTasks.has('nutrition') && styles.completedButton,
-                ]}
-                onPress={() => handleTaskComplete('nutrition', 3)}
-                disabled={completedTasks.has('nutrition')}
-              >
-                <CheckCircle
-                  size={20}
-                  color={
-                    completedTasks.has('nutrition') ? '#4CAF50' : '#9CA3AF'
-                  }
-                />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.cardContent}>{phaseInfo.nutrition}</Text>
-          </View>
-
-          {/* Recovery Card */}
-          <View style={styles.recommendationCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>🧘‍♀️ Self-Care</Text>
-              <TouchableOpacity
-                style={[
-                  styles.completeButton,
-                  completedTasks.has('recovery') && styles.completedButton,
-                ]}
-                onPress={() => handleTaskComplete('recovery', 2)}
-                disabled={completedTasks.has('recovery')}
-              >
-                <CheckCircle
-                  size={20}
-                  color={completedTasks.has('recovery') ? '#4CAF50' : '#9CA3AF'}
-                />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.cardContent}>{phaseInfo.recovery}</Text>
-          </View>
-        </View>
-
-        {/* Progress Summary */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Progress</Text>
-          <View style={styles.progressCard}>
-            <View style={styles.progressRow}>
-              <Text style={styles.progressLabel}>Total Points</Text>
-              <Text style={styles.progressValue}>
-                {userData.totalPoints || 0}
-              </Text>
-            </View>
-            <View style={styles.progressRow}>
-              <Text style={styles.progressLabel}>Current Level</Text>
-              <Text style={styles.progressValue}>
-                Level {Math.floor((userData.totalPoints || 0) / 100) + 1}
-              </Text>
-            </View>
-            <View style={styles.progressRow}>
-              <Text style={styles.progressLabel}>Tasks Today</Text>
-              <Text style={styles.progressValue}>{completedTasks.size}/3</Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
   },
   scrollView: {
     flex: 1,
@@ -304,63 +488,55 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6B7280',
   },
   header: {
-    padding: 20,
-    paddingTop: 10,
+    padding: 24,
+    paddingTop: 8,
   },
   greeting: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
   },
   cycleTrackerSection: {
-    backgroundColor: '#F5E6DA',
-    padding: 20,
-    marginHorizontal: 20,
+    padding: 24,
+    marginHorizontal: 24,
     marginTop: 10,
     borderRadius: 16,
   },
   cycleTrackerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 16,
   },
   cycleInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   cycleInfoText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1F2937',
   },
   cycleInfoSeparator: {
     fontSize: 20,
-    color: '#9CA3AF',
-    marginHorizontal: 12,
+    marginHorizontal: 8,
   },
   cycleMessage: {
     fontSize: 18,
-    color: '#4B5563',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   phaseLabelsContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   phaseLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 20,
+    marginRight: 24,
   },
   phaseDot: {
     width: 12,
@@ -370,13 +546,11 @@ const styles = StyleSheet.create({
   },
   phaseLabelText: {
     fontSize: 16,
-    color: '#4B5563',
   },
   progressBarContainer: {
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#E5E7EB',
-    marginBottom: 10,
+    marginBottom: 16,
     position: 'relative',
   },
   progressBar: {
@@ -386,76 +560,32 @@ const styles = StyleSheet.create({
   },
   positionIndicator: {
     position: 'absolute',
-    top: -20,
-    transform: [{ translateX: -25 }],
+    top: -16,
+    alignItems: 'center',
   },
   iconCircle: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  phaseCard: {
-    margin: 20,
-    marginTop: 10,
-    padding: 20,
-    borderRadius: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  phaseHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  phaseInfo: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  phaseName: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1F2937',
-  },
-  phaseDay: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 2,
-  },
-  phaseMessage: {
-    fontSize: 16,
-    color: '#374151',
-    lineHeight: 24,
+  draggableIndicator: {
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   section: {
-    padding: 20,
+    padding: 24,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 16,
   },
   recommendationCard: {
-    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    marginBottom: 8,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -466,12 +596,10 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
   },
   cardContent: {
     fontSize: 14,
-    color: '#6B7280',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   completeButton: {
     padding: 4,
@@ -480,14 +608,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   progressCard: {
-    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   progressRow: {
     flexDirection: 'row',
@@ -497,11 +619,9 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 16,
-    color: '#6B7280',
   },
   progressValue: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FF6B6B',
   },
 });
