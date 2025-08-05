@@ -40,7 +40,10 @@ export default function Header({
             <TouchableOpacity style={styles.iconButton}>
               <Search size={24} color={colors.text.light} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity 
+              style={styles.iconButton}
+              onPress={() => router.push('/shop')}
+            >
               <ShoppingBag size={24} color={colors.text.light} />
             </TouchableOpacity>
             <TouchableOpacity

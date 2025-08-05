@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { checkOnboardingStatus } from '@/utils/storage';
 import { router } from 'expo-router';
+import { ShopProvider } from './ShopContext';
 import {
   View,
   StyleSheet,
@@ -73,7 +74,10 @@ function TopHeader() {
         <TouchableOpacity style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}>
           <Search size={24} color={theme.colors.text.light} />
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}>
+        <TouchableOpacity 
+          style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}
+          onPress={() => router.push('/shop')}
+        >
           <ShoppingBag size={24} color={theme.colors.text.light} />
         </TouchableOpacity>
         <TouchableOpacity
@@ -342,6 +346,11 @@ function AppWithTheme() {
                 options={{ headerShown: true }}
               />
               <Stack.Screen name="fitness" />
+              <Stack.Screen name="shop" />
+              <Stack.Screen
+                name="shop/[category]"
+                options={{ headerShown: true }}
+              />
             </Stack>
             <StatusBar style={theme.colors.background.main === '#121212' ? 'light' : 'dark'} />
             {!isOnboardingScreen && !shouldHideTabBar() && <BottomTabBar />}
@@ -358,7 +367,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        <AppWithTheme />
+        <ShopProvider>
+          <AppWithTheme />
+        </ShopProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

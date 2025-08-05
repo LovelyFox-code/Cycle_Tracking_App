@@ -6,52 +6,29 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
-
-// Dummy workout data
-const workouts = [
-  {
-    slug: 'morning-energizer',
-    title: 'Morning Energizer',
-    description: 'Quick strength warm-up to kickstart your day',
-    duration: '15 min',
-    points: 10,
-    isPremium: false,
-    calories: 120,
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-  },
-  {
-    slug: 'yoga-flow',
-    title: 'Yoga Flow',
-    description: 'Relaxing and grounding flow to release tension',
-    duration: '20 min',
-    points: 15,
-    isPremium: false,
-    calories: 100,
-    videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-  },
-  {
-    slug: 'hiit-blast',
-    title: 'HIIT Blast',
-    description: 'High intensity interval training to boost energy',
-    duration: '25 min',
-    points: 20,
-    isPremium: true,
-    calories: 220,
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-  },
-];
+import { workouts } from '@/data/workouts';
+import BackButton from '@/components/common/BackButton';
 
 export default function WorkoutDetailScreen() {
   const { theme } = useTheme();
   const { slug } = useLocalSearchParams();
-  const workout = workouts.find((w) => w.slug === slug);
+  const slugString = Array.isArray(slug)
+    ? slug[0]
+    : typeof slug === 'string'
+    ? slug
+    : '';
+  const workout = workouts.find((w) => w.slug === slugString);
 
   if (!workout) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background.main },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.text.muted }]}>
           Workout not found.
         </Text>
@@ -66,20 +43,14 @@ export default function WorkoutDetailScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background.main },
+      ]}
+    >
       <Stack.Screen options={{ title: workout.title, headerShown: false }} />
-      <TouchableOpacity 
-        onPress={() => router.back()} 
-        style={[
-          styles.backIcon, 
-          { 
-            backgroundColor: `${theme.colors.background.card}E6`,
-            ...theme.shadows.small
-          }
-        ]}
-      >
-        <ArrowLeft size={24} color={theme.colors.text.primary} />
-      </TouchableOpacity>
+      <BackButton style={styles.backIcon} />
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.title, { color: theme.colors.text.primary }]}>
@@ -90,7 +61,12 @@ export default function WorkoutDetailScreen() {
         </Text>
 
         {/* Video Placeholder */}
-        <View style={[styles.videoPlaceholder, { backgroundColor: theme.colors.background.highlight }]}>
+        <View
+          style={[
+            styles.videoPlaceholder,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
+        >
           <Text style={[styles.videoText, { color: theme.colors.text.light }]}>
             [ Video Placeholder ]
           </Text>
@@ -104,25 +80,36 @@ export default function WorkoutDetailScreen() {
 
         {/* Details */}
         <View style={styles.details}>
-          <Text style={[styles.detailText, { color: theme.colors.text.secondary }]}>
+          <Text
+            style={[styles.detailText, { color: theme.colors.text.secondary }]}
+          >
             Duration: {workout.duration}
           </Text>
-          <Text style={[styles.detailText, { color: theme.colors.text.secondary }]}>
+          <Text
+            style={[styles.detailText, { color: theme.colors.text.secondary }]}
+          >
             Points: {workout.points}
           </Text>
           {workout.calories && (
-            <Text style={[styles.detailText, { color: theme.colors.text.secondary }]}>
+            <Text
+              style={[
+                styles.detailText,
+                { color: theme.colors.text.secondary },
+              ]}
+            >
               Calories: {workout.calories}
             </Text>
           )}
           {workout.isPremium && (
-            <Text style={[
-              styles.premiumBadge, 
-              { 
-                color: theme.colors.accent,
-                backgroundColor: `${theme.colors.status.warning}30` 
-              }
-            ]}>
+            <Text
+              style={[
+                styles.premiumBadge,
+                {
+                  color: theme.colors.accent,
+                  backgroundColor: `${theme.colors.status.warning}30`,
+                },
+              ]}
+            >
               Premium Workout
             </Text>
           )}

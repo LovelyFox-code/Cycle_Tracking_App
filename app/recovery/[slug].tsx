@@ -7,52 +7,37 @@ import {
 } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
-
-type RecoveryKey = 'deep-breathing' | 'meditation';
-
-type RecoveryItem = {
-  title: string;
-  description: string;
-  videoUrl: string;
-  points: number;
-  isPremium: boolean;
-};
-
-const dummyRecoveryData: Record<RecoveryKey, RecoveryItem> = {
-  'deep-breathing': {
-    title: 'Deep Breathing',
-    description: '5 minutes of focused breathing',
-    videoUrl: 'https://example.com/deep-breathing.mp4',
-    points: 10,
-    isPremium: false,
-  },
-  meditation: {
-    title: 'Meditation',
-    description: '10 minutes of guided meditation',
-    videoUrl: 'https://example.com/meditation.mp4',
-    points: 20,
-    isPremium: true,
-  },
-  // Add more...
-};
+import { recoveryItems } from '@/data/recovery';
+import { Recovery } from '@/types/content';
+import BackButton from '@/components/common/BackButton';
 
 export default function RecoveryDetail() {
   const { theme } = useTheme();
   const { slug } = useLocalSearchParams();
-
-  const recovery = dummyRecoveryData[slug as RecoveryKey];
+  const slugString = typeof slug === 'string' ? slug : '';
+  
+  const recovery = recoveryItems.find(item => item.slug === slugString);
 
   if (!recovery) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background.main },
+        ]}
+      >
         <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { color: theme.colors.text.secondary }]}>
+          <Text
+            style={[styles.errorText, { color: theme.colors.text.secondary }]}
+          >
             Recovery practice not found
           </Text>
           <TouchableOpacity
-            style={[styles.backButton, { backgroundColor: theme.colors.primary }]}
+            style={[
+              styles.backButton,
+              { backgroundColor: theme.colors.primary },
+            ]}
             onPress={() => router.back()}
           >
             <Text style={styles.backButtonText}>Go Back</Text>
@@ -63,20 +48,14 @@ export default function RecoveryDetail() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background.main },
+      ]}
+    >
       <Stack.Screen options={{ title: recovery.title, headerShown: false }} />
-      <TouchableOpacity 
-        onPress={() => router.back()} 
-        style={[
-          styles.backIcon, 
-          { 
-            backgroundColor: `${theme.colors.background.card}E6`,
-            ...theme.shadows.small
-          }
-        ]}
-      >
-        <ArrowLeft size={24} color={theme.colors.text.primary} />
-      </TouchableOpacity>
+      <BackButton style={styles.backIcon} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={[styles.title, { color: theme.colors.text.primary }]}>
           {recovery.title}
@@ -85,21 +64,30 @@ export default function RecoveryDetail() {
           {recovery.description}
         </Text>
 
-        <View style={[styles.videoPlaceholder, { backgroundColor: theme.colors.background.highlight }]}>
-          <Text style={{ color: theme.colors.text.light }}>[Video would appear here]</Text>
+        <View
+          style={[
+            styles.videoPlaceholder,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
+        >
+          <Text style={{ color: theme.colors.text.light }}>
+            [Video would appear here]
+          </Text>
         </View>
 
         <Text style={[styles.points, { color: theme.colors.text.primary }]}>
           Points: {recovery.points}
         </Text>
         {recovery.isPremium && (
-          <Text style={[
-            styles.premiumBadge, 
-            { 
-              color: theme.colors.accent,
-              backgroundColor: `${theme.colors.status.warning}30` 
-            }
-          ]}>
+          <Text
+            style={[
+              styles.premiumBadge,
+              {
+                color: theme.colors.accent,
+                backgroundColor: `${theme.colors.status.warning}30`,
+              },
+            ]}
+          >
             PREMIUM
           </Text>
         )}
@@ -109,21 +97,21 @@ export default function RecoveryDetail() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
   },
-  scrollContent: { 
-    paddingTop: 50, 
-    paddingHorizontal: 20 
+  scrollContent: {
+    paddingTop: 50,
+    paddingHorizontal: 20,
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 10 
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  description: { 
-    fontSize: 16, 
-    marginBottom: 20 
+  description: {
+    fontSize: 16,
+    marginBottom: 20,
   },
   videoPlaceholder: {
     height: 200,
@@ -140,9 +128,9 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 20,
   },
-  points: { 
-    fontSize: 16, 
-    fontWeight: '600' 
+  points: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   premiumBadge: {
     marginTop: 10,
