@@ -1,12 +1,10 @@
-// styles/theme.ts
-import { 
-  Theme, 
-  ThemeColors, 
-  Typography, 
-  Spacing, 
-  BorderRadius, 
-  Shadows,
-  GradientPair
+import {
+  Theme,
+  ThemeColors,
+  Typography,
+  Spacing,
+  BorderRadius,
+  Shadows
 } from './types';
 
 // Light theme colors
@@ -42,14 +40,14 @@ export const lightColors: ThemeColors = {
     primary: ['#FF6B6B', '#FF8E53'],
     secondary: ['#667eea', '#764ba2'],
     accent: ['#f093fb', '#f5576c'],
-    
+
     // Purpose-based gradients
     energy: ['#FF6B6B', '#FF8E53'],     // Warm orange - for energy/activity
     calm: ['#667eea', '#764ba2'],       // Blue/purple - for relaxation/mindfulness
     vitality: ['#FFD93D', '#FF6B6B'],   // Yellow/orange - for health/nutrition
     passion: ['#f093fb', '#f5576c'],    // Pink/red - for motivation/intensity
     strength: ['#8E24AA', '#FF1744'],   // Purple/red - for power/achievement
-    
+
     // Phase-based gradients (for cycle phases)
     menstrual: ['#4FC3F7', '#2196F3'],  // Blues
     follicular: ['#FFD93D', '#FFA000'], // Yellows
@@ -91,14 +89,14 @@ export const darkColors: ThemeColors = {
     primary: ['#FF8E53', '#FF6B6B'],
     secondary: ['#764ba2', '#667eea'],
     accent: ['#f5576c', '#f093fb'],
-    
+
     // Purpose-based gradients
     energy: ['#FF8E53', '#FF6B6B'],     // Warm orange - for energy/activity
     calm: ['#764ba2', '#667eea'],       // Blue/purple - for relaxation/mindfulness
     vitality: ['#FF6B6B', '#FFD93D'],   // Yellow/orange - for health/nutrition
     passion: ['#f5576c', '#f093fb'],    // Pink/red - for motivation/intensity
     strength: ['#FF1744', '#8E24AA'],   // Purple/red - for power/achievement
-    
+
     // Phase-based gradients (for cycle phases)
     menstrual: ['#2196F3', '#64B5F6'],  // Blues
     follicular: ['#FFA000', '#FFEE58'], // Yellows
@@ -140,14 +138,14 @@ export const brandAColors: ThemeColors = {
     primary: ['#6200EA', '#7C4DFF'],
     secondary: ['#03DAC6', '#00B0FF'],
     accent: ['#FFA000', '#FFD600'],
-    
+
     // Purpose-based gradients
     energy: ['#FFA000', '#FFD600'],
     calm: ['#03DAC6', '#00B0FF'],
     vitality: ['#FFD600', '#FFA000'],
     passion: ['#FF1744', '#D50000'],
     strength: ['#9C27B0', '#6200EA'],
-    
+
     // Phase-based gradients
     menstrual: ['#03DAC6', '#00B0FF'],
     follicular: ['#FFA000', '#FFD600'],
@@ -168,10 +166,10 @@ export const typography: Typography = {
     xxxl: 28,
   },
   fontWeight: {
-    regular: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+    regular: '400' as const,
+    medium: '500' as const,
+    semibold: '600' as const,
+    bold: '700' as const,
   },
   lineHeight: {
     tight: 1.2,

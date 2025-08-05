@@ -1,4 +1,3 @@
-// components/common/Card.tsx
 import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { colors, borderRadius, shadows } from '@/styles/theme';
 

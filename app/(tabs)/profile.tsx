@@ -1,6 +1,13 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Settings, Bell, HelpCircle, LogOut } from 'lucide-react-native';
+import { Settings, Bell, HelpCircle, LogOut } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { clearUserData } from '@/utils/storage';
 import { useTheme } from '@/hooks/useTheme';
@@ -8,13 +15,13 @@ import { ThemeToggle } from '@/components/common';
 
 export default function ProfileScreen() {
   const { theme } = useTheme();
-  
+
   // Mock user data - in a real app, this would come from a state management system or API
   const userData = {
-    name: "Alina",
-    email: "Alina@example.com",
-    joinDate: "Member since March 2023",
-    profileImage: require('@/assets/images/icon.png')
+    name: 'Alina',
+    email: 'Alina@example.com',
+    joinDate: 'Member since March 2023',
+    profileImage: require('@/assets/images/icon.png'),
   };
 
   const handleLogout = async () => {
@@ -25,83 +32,171 @@ export default function ProfileScreen() {
   };
 
   const menuItems = [
-    { icon: Settings, label: 'Settings', onPress: () => console.log('Settings pressed') },
-    { icon: Bell, label: 'Notifications', onPress: () => console.log('Notifications pressed') },
-    { icon: HelpCircle, label: 'Help & Support', onPress: () => console.log('Help pressed') },
+    {
+      icon: Settings,
+      label: 'Settings',
+      onPress: () => console.log('Settings pressed'),
+    },
+    {
+      icon: Bell,
+      label: 'Notifications',
+      onPress: () => console.log('Notifications pressed'),
+    },
+    {
+      icon: HelpCircle,
+      label: 'Help & Support',
+      onPress: () => console.log('Help pressed'),
+    },
     { icon: LogOut, label: 'Log Out', onPress: handleLogout },
   ];
 
   return (
-    <SafeAreaView 
-      style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background.main },
+      ]}
       edges={['left', 'right']}
     >
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Your Profile</Text>
+          <Text
+            style={[styles.headerTitle, { color: theme.colors.text.primary }]}
+          >
+            Your Profile
+          </Text>
         </View>
-        
+
         {/* User Profile Card */}
-        <View style={[styles.profileCard, { 
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.small
-        }]}>
+        <View
+          style={[
+            styles.profileCard,
+            {
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.small,
+            },
+          ]}
+        >
           <Image source={userData.profileImage} style={styles.profileImage} />
           <View style={styles.profileInfo}>
-            <Text style={[styles.userName, { color: theme.colors.text.primary }]}>{userData.name}</Text>
-            <Text style={[styles.userEmail, { color: theme.colors.text.muted }]}>{userData.email}</Text>
-            <Text style={[styles.memberSince, { color: theme.colors.text.light }]}>{userData.joinDate}</Text>
+            <Text
+              style={[styles.userName, { color: theme.colors.text.primary }]}
+            >
+              {userData.name}
+            </Text>
+            <Text
+              style={[styles.userEmail, { color: theme.colors.text.muted }]}
+            >
+              {userData.email}
+            </Text>
+            <Text
+              style={[styles.memberSince, { color: theme.colors.text.light }]}
+            >
+              {userData.joinDate}
+            </Text>
           </View>
         </View>
-        
+
         {/* Theme Settings */}
-        <View style={[styles.themeSection, { 
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.small
-        }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Appearance</Text>
+        <View
+          style={[
+            styles.themeSection,
+            {
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.small,
+            },
+          ]}
+        >
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.text.primary }]}
+          >
+            Appearance
+          </Text>
           <ThemeToggle showBrandOptions={true} />
         </View>
-        
+
         {/* Subscription Banner */}
-        <TouchableOpacity style={[styles.subscriptionBanner, { backgroundColor: theme.colors.background.highlight }]}>
+        <TouchableOpacity
+          style={[
+            styles.subscriptionBanner,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
+        >
           <View style={styles.subscriptionContent}>
-            <Text style={[styles.subscriptionTitle, { color: theme.colors.text.primary }]}>Upgrade to Premium</Text>
-            <Text style={[styles.subscriptionDescription, { color: theme.colors.text.secondary }]}>
+            <Text
+              style={[
+                styles.subscriptionTitle,
+                { color: theme.colors.text.primary },
+              ]}
+            >
+              Upgrade to Premium
+            </Text>
+            <Text
+              style={[
+                styles.subscriptionDescription,
+                { color: theme.colors.text.secondary },
+              ]}
+            >
               Get unlimited access to all features
             </Text>
           </View>
-          <View style={[styles.subscriptionButton, { backgroundColor: theme.colors.primary }]}>
+          <View
+            style={[
+              styles.subscriptionButton,
+              { backgroundColor: theme.colors.primary },
+            ]}
+          >
             <Text style={styles.subscriptionButtonText}>Upgrade</Text>
           </View>
         </TouchableOpacity>
-        
+
         {/* Menu Items */}
-        <View style={[styles.menuContainer, { 
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.small
-        }]}>
+        <View
+          style={[
+            styles.menuContainer,
+            {
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.small,
+            },
+          ]}
+        >
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <TouchableOpacity 
-                key={index} 
+              <TouchableOpacity
+                key={index}
                 style={[
-                  styles.menuItem, 
+                  styles.menuItem,
                   { borderBottomColor: theme.colors.background.highlight },
-                  index === menuItems.length - 1 ? styles.menuItemLast : null
+                  index === menuItems.length - 1 ? styles.menuItemLast : null,
                 ]}
                 onPress={item.onPress}
               >
-                <Icon size={22} color={theme.colors.text.secondary} style={styles.menuIcon} />
-                <Text style={[styles.menuLabel, { color: theme.colors.text.secondary }]}>{item.label}</Text>
+                <Icon
+                  size={22}
+                  color={theme.colors.text.secondary}
+                  style={styles.menuIcon}
+                />
+                <Text
+                  style={[
+                    styles.menuLabel,
+                    { color: theme.colors.text.secondary },
+                  ]}
+                >
+                  {item.label}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
-        
+
         {/* App Version */}
-        <Text style={[styles.versionText, { color: theme.colors.text.light }]}>Version 1.0.0</Text>
+        <Text style={[styles.versionText, { color: theme.colors.text.light }]}>
+          Version 1.0.0
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

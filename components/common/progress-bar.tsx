@@ -1,4 +1,3 @@
-// components/common/ProgressBar.tsx
 import { View, StyleSheet, ViewStyle, ColorValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, borderRadius } from '@/styles/theme';
@@ -24,21 +23,20 @@ export default function ProgressBar({
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
 
   return (
-    <View
-      style={[
-        styles.container,
-        { height, backgroundColor },
-        style,
-      ]}
-    >
+    <View style={[styles.container, { height, backgroundColor }, style]}>
       <LinearGradient
-        colors={progressColors.length > 1 ? progressColors as [ColorValue, ColorValue, ...ColorValue[]] : [progressColors[0], progressColors[0]] as [ColorValue, ColorValue, ...ColorValue[]]}
+        colors={
+          progressColors.length > 1
+            ? (progressColors as [ColorValue, ColorValue, ...ColorValue[]])
+            : ([progressColors[0], progressColors[0]] as [
+                ColorValue,
+                ColorValue,
+                ...ColorValue[]
+              ])
+        }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={[
-          styles.progressBar,
-          { width: `${clampedProgress}%` },
-        ]}
+        style={[styles.progressBar, { width: `${clampedProgress}%` }]}
       />
       {children}
     </View>

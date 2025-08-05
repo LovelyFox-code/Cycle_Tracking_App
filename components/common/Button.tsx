@@ -1,6 +1,12 @@
-// components/common/Button.tsx
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { colors, spacing, borderRadius, typography } from '@/styles/theme';
+import { combineStyles, combineTextStyles } from '@/utils/styles';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 type ButtonSize = 'small' | 'medium' | 'large';
@@ -30,22 +36,22 @@ export default function Button({
   icon,
   iconPosition = 'left',
 }: ButtonProps) {
-  const buttonStyles = [
+  const buttonStyles = combineStyles<ViewStyle>(
     styles.button,
     styles[`${variant}Button`],
     styles[`${size}Button`],
     fullWidth && styles.fullWidth,
     disabled && styles.disabledButton,
-    style,
-  ];
+    style
+  );
 
-  const textStyles = [
+  const textStyles = combineTextStyles(
     styles.buttonText,
     styles[`${variant}Text`],
     styles[`${size}Text`],
     disabled && styles.disabledText,
-    textStyle,
-  ];
+    textStyle
+  );
 
   const content = (
     <>
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: '600', // Using direct value instead of typography.fontWeight.semibold
   },
   primaryText: {
     color: colors.background.card,

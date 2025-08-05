@@ -1,9 +1,14 @@
-// components/modals/DayInfoModal.tsx
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { X } from 'lucide-react-native';
-import { colors, spacing, borderRadius, typography, shadows } from '@/styles/theme';
-import Button from '../common/Button';
+import {
+  colors,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+} from '@/styles/theme';
+import Button from '../common/button';
 
 type DayInfoModalProps = {
   visible: boolean;
@@ -27,7 +32,7 @@ export default function DayInfoModal({
   }
 
   const getPhaseColor = (phase: string) => {
-    return colors.phase[phase] || colors.primary;
+    return colors.phase[phase as keyof typeof colors.phase] || colors.primary;
   };
 
   const formatDate = (date: Date) => {
@@ -67,7 +72,7 @@ export default function DayInfoModal({
             <Text style={styles.descriptionText}>{phaseInfo.message}</Text>
 
             <Text style={styles.sectionTitle}>Recommendations</Text>
-            
+
             <View style={styles.recommendationSection}>
               <Text style={styles.recommendationTitle}>🏃‍♀️ Workout</Text>
               <Text style={styles.recommendationText}>{phaseInfo.workout}</Text>
@@ -75,12 +80,16 @@ export default function DayInfoModal({
 
             <View style={styles.recommendationSection}>
               <Text style={styles.recommendationTitle}>🍽️ Nutrition</Text>
-              <Text style={styles.recommendationText}>{phaseInfo.nutrition}</Text>
+              <Text style={styles.recommendationText}>
+                {phaseInfo.nutrition}
+              </Text>
             </View>
 
             <View style={styles.recommendationSection}>
               <Text style={styles.recommendationTitle}>🧘‍♀️ Self-Care</Text>
-              <Text style={styles.recommendationText}>{phaseInfo.recovery}</Text>
+              <Text style={styles.recommendationText}>
+                {phaseInfo.recovery}
+              </Text>
             </View>
 
             <Button

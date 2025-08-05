@@ -34,14 +34,14 @@ export type GradientColors = {
   primary: GradientPair;
   secondary: GradientPair;
   accent: GradientPair;
-  
+
   // Purpose-based gradients
   energy: GradientPair;
   calm: GradientPair;
   vitality: GradientPair;
   passion: GradientPair;
   strength: GradientPair;
-  
+
   // Phase-based gradients
   menstrual: GradientPair;
   follicular: GradientPair;
@@ -61,6 +61,10 @@ export type ThemeColors = {
   gradient: GradientColors;
 };
 
+export type FontWeightType =
+  | 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900'
+  | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+
 export type Typography = {
   fontSize: {
     xs: number;
@@ -72,10 +76,10 @@ export type Typography = {
     xxxl: number;
   };
   fontWeight: {
-    regular: string;
-    medium: string;
-    semibold: string;
-    bold: string;
+    regular: FontWeightType;
+    medium: FontWeightType;
+    semibold: FontWeightType;
+    bold: FontWeightType;
   };
   lineHeight: {
     tight: number;

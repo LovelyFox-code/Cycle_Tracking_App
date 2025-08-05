@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run basic TypeScript check
+npm run typecheck:basic || (
+  echo "❌ TypeScript check failed. Please fix the errors before committing."
+  exit 1
+)
+
+# Run linting
+npm run lint || (
+  echo "❌ Linting failed. Please fix the errors before committing."
+  exit 1
+)
+
+echo "✅ Code checks passed!"

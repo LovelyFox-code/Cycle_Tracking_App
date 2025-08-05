@@ -27,11 +27,8 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { getUserData, updateUserPoints, completeTask } from '@/utils/storage';
-import {
-  getCurrentPhase,
-  getPhaseInfo,
-  calculateDaysInPhase,
-} from '@/utils/cycleCalculations';
+import { getCurrentPhase, getPhaseInfo } from '@/utils/cycleCalculations';
+import { CyclePhase } from '@/types/content';
 import { useTheme } from '@/hooks/useTheme';
 
 type UserData = {
@@ -111,26 +108,29 @@ export default function Dashboard() {
     loadUserData(); // Refresh data
   };
 
-  const getPhaseColor = (phase: string): string => {
-    switch (phase) {
-      case 'menstrual':
-        return theme.colors.phase.menstrual;
-      case 'follicular':
-        return theme.colors.phase.follicular;
-      case 'ovulation':
-        return theme.colors.phase.ovulation;
-      case 'luteal':
-        return theme.colors.phase.luteal;
-      default:
-        return theme.colors.primary;
-    }
-  };
+  // Commented out unused function
+  // const getPhaseColor = (phase: string): string => {
+  //   switch (phase) {
+  //     case 'menstrual':
+  //       return theme.colors.phase.menstrual;
+  //     case 'follicular':
+  //       return theme.colors.phase.follicular;
+  //     case 'ovulation':
+  //       return theme.colors.phase.ovulation;
+  //     case 'luteal':
+  //       return theme.colors.phase.luteal;
+  //     default:
+  //       return theme.colors.primary;
+  //   }
+  // };
 
   const getPhaseIcon = (phase: string) => {
     const iconSize = theme.spacing.l + theme.spacing.xs;
     switch (phase) {
       case 'menstrual':
-        return <Droplets size={iconSize} color={theme.colors.phase.menstrual} />;
+        return (
+          <Droplets size={iconSize} color={theme.colors.phase.menstrual} />
+        );
       case 'follicular':
         return <Sun size={iconSize} color={theme.colors.phase.follicular} />;
       case 'ovulation':
@@ -177,7 +177,7 @@ export default function Dashboard() {
         // Calculate the phase based on the new cycle day
         const newPhase = getPhaseForDay(newCycleDay, userData.cycleLength);
         setCurrentPhase(newPhase);
-        setPhaseInfo(getPhaseInfo(newPhase));
+        setPhaseInfo(getPhaseInfo(newPhase as CyclePhase));
       }
     }
   };
@@ -199,7 +199,7 @@ export default function Dashboard() {
         Math.min(progressBarWidth.value, newPosition)
       );
     },
-    onEnd: (event) => {
+    onEnd: (_event) => {
       if (progressBarWidth.value > 0) {
         // Calculate percentage position (0-100%)
         const positionPercent =
@@ -220,12 +220,17 @@ export default function Dashboard() {
   if (!userData || !currentPhase || !phaseInfo) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaView 
-          style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+        <SafeAreaView
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background.main },
+          ]}
           edges={['left', 'right']}
         >
           <View style={styles.centerContent}>
-            <Text style={[styles.loadingText, { color: theme.colors.text.muted }]}>
+            <Text
+              style={[styles.loadingText, { color: theme.colors.text.muted }]}
+            >
               Loading your cycle data...
             </Text>
           </View>
@@ -234,16 +239,20 @@ export default function Dashboard() {
     );
   }
 
-  const daysInPhase = calculateDaysInPhase(
-    userData.lastPeriodDate,
-    userData.cycleLength,
-    currentPhase
-  );
+  // Commented out unused calculation
+  // const daysInPhase = calculateDaysInPhase(
+  //   userData.lastPeriodDate,
+  //   userData.cycleLength,
+  //   currentPhase
+  // );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView 
-        style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background.main },
+        ]}
         edges={['left', 'right']}
       >
         <ScrollView
@@ -252,7 +261,9 @@ export default function Dashboard() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.greeting, { color: theme.colors.text.primary }]}>
+            <Text
+              style={[styles.greeting, { color: theme.colors.text.primary }]}
+            >
               Hello, {userData.name || 'there'}!
             </Text>
             <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>
@@ -261,20 +272,70 @@ export default function Dashboard() {
           </View>
 
           {/* Cycle Tracker Section */}
-          <View style={[styles.cycleTrackerSection, { backgroundColor: theme.colors.background.highlight }]}>
-            <Text style={[styles.cycleTrackerTitle, { color: theme.colors.text.primary }]}>Cycle Tracker</Text>
+          <View
+            style={[
+              styles.cycleTrackerSection,
+              { backgroundColor: theme.colors.background.highlight },
+            ]}
+          >
+            <Text
+              style={[
+                styles.cycleTrackerTitle,
+                { color: theme.colors.text.primary },
+              ]}
+            >
+              Cycle Tracker
+            </Text>
 
             <View style={styles.cycleInfoRow}>
-              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>Today</Text>
-              <Text style={[styles.cycleInfoSeparator, { color: theme.colors.text.light }]}>|</Text>
-              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>Day {cycleDay}</Text>
-              <Text style={[styles.cycleInfoSeparator, { color: theme.colors.text.light }]}>|</Text>
-              <Text style={[styles.cycleInfoText, { color: theme.colors.text.primary }]}>
+              <Text
+                style={[
+                  styles.cycleInfoText,
+                  { color: theme.colors.text.primary },
+                ]}
+              >
+                Today
+              </Text>
+              <Text
+                style={[
+                  styles.cycleInfoSeparator,
+                  { color: theme.colors.text.light },
+                ]}
+              >
+                |
+              </Text>
+              <Text
+                style={[
+                  styles.cycleInfoText,
+                  { color: theme.colors.text.primary },
+                ]}
+              >
+                Day {cycleDay}
+              </Text>
+              <Text
+                style={[
+                  styles.cycleInfoSeparator,
+                  { color: theme.colors.text.light },
+                ]}
+              >
+                |
+              </Text>
+              <Text
+                style={[
+                  styles.cycleInfoText,
+                  { color: theme.colors.text.primary },
+                ]}
+              >
                 {phaseInfo.name} {currentPhase === 'luteal' ? 'Fall' : 'Phase'}
               </Text>
             </View>
 
-            <Text style={[styles.cycleMessage, { color: theme.colors.text.secondary }]}>
+            <Text
+              style={[
+                styles.cycleMessage,
+                { color: theme.colors.text.secondary },
+              ]}
+            >
               You're steady and productive; enjoy the slower pace.
             </Text>
 
@@ -287,7 +348,14 @@ export default function Dashboard() {
                     { backgroundColor: theme.colors.phase.luteal },
                   ]}
                 />
-                <Text style={[styles.phaseLabelText, { color: theme.colors.text.secondary }]}>Luteal</Text>
+                <Text
+                  style={[
+                    styles.phaseLabelText,
+                    { color: theme.colors.text.secondary },
+                  ]}
+                >
+                  Luteal
+                </Text>
               </View>
               <View style={styles.phaseLabel}>
                 <View
@@ -296,13 +364,23 @@ export default function Dashboard() {
                     { backgroundColor: theme.colors.phase.menstrual },
                   ]}
                 />
-                <Text style={[styles.phaseLabelText, { color: theme.colors.text.secondary }]}>Menstruation</Text>
+                <Text
+                  style={[
+                    styles.phaseLabelText,
+                    { color: theme.colors.text.secondary },
+                  ]}
+                >
+                  Menstruation
+                </Text>
               </View>
             </View>
 
             {/* Progress Bar */}
             <View
-              style={[styles.progressBarContainer, { backgroundColor: theme.colors.text.light }]}
+              style={[
+                styles.progressBarContainer,
+                { backgroundColor: theme.colors.text.light },
+              ]}
               onLayout={(event) => {
                 const width = event.nativeEvent.layout.width;
                 progressBarWidth.value = width;
@@ -325,14 +403,16 @@ export default function Dashboard() {
                 <Animated.View
                   style={[styles.positionIndicator, animatedStyle]}
                 >
-                  <View style={[
-                    styles.iconCircle, 
-                    styles.draggableIndicator, 
-                    { 
-                      backgroundColor: theme.colors.background.card,
-                      ...theme.shadows.medium
-                    }
-                  ]}>
+                  <View
+                    style={[
+                      styles.iconCircle,
+                      styles.draggableIndicator,
+                      {
+                        backgroundColor: theme.colors.background.card,
+                        ...theme.shadows.medium,
+                      },
+                    ]}
+                  >
                     {getPhaseIcon(currentPhase)}
                   </View>
                 </Animated.View>
@@ -342,18 +422,34 @@ export default function Dashboard() {
 
           {/* Today's Recommendations */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Today's Recommendations</Text>
+            <Text
+              style={[
+                styles.sectionTitle,
+                { color: theme.colors.text.primary },
+              ]}
+            >
+              Today's Recommendations
+            </Text>
 
             {/* Workout Card */}
-            <View style={[
-              styles.recommendationCard, 
-              { 
-                backgroundColor: theme.colors.background.card,
-                ...theme.shadows.small
-              }
-            ]}>
+            <View
+              style={[
+                styles.recommendationCard,
+                {
+                  backgroundColor: theme.colors.background.card,
+                  ...theme.shadows.small,
+                },
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🏃‍♀️ Workout</Text>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    { color: theme.colors.text.primary },
+                  ]}
+                >
+                  🏃‍♀️ Workout
+                </Text>
                 <TouchableOpacity
                   style={[
                     styles.completeButton,
@@ -372,19 +468,32 @@ export default function Dashboard() {
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.workout}</Text>
+              <Text
+                style={[styles.cardContent, { color: theme.colors.text.muted }]}
+              >
+                {phaseInfo.workout}
+              </Text>
             </View>
 
             {/* Nutrition Card */}
-            <View style={[
-              styles.recommendationCard, 
-              { 
-                backgroundColor: theme.colors.background.card,
-                ...theme.shadows.small
-              }
-            ]}>
+            <View
+              style={[
+                styles.recommendationCard,
+                {
+                  backgroundColor: theme.colors.background.card,
+                  ...theme.shadows.small,
+                },
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🍽️ Nutrition Focus</Text>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    { color: theme.colors.text.primary },
+                  ]}
+                >
+                  🍽️ Nutrition Focus
+                </Text>
                 <TouchableOpacity
                   style={[
                     styles.completeButton,
@@ -403,19 +512,32 @@ export default function Dashboard() {
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.nutrition}</Text>
+              <Text
+                style={[styles.cardContent, { color: theme.colors.text.muted }]}
+              >
+                {phaseInfo.nutrition}
+              </Text>
             </View>
 
             {/* Recovery Card */}
-            <View style={[
-              styles.recommendationCard, 
-              { 
-                backgroundColor: theme.colors.background.card,
-                ...theme.shadows.small
-              }
-            ]}>
+            <View
+              style={[
+                styles.recommendationCard,
+                {
+                  backgroundColor: theme.colors.background.card,
+                  ...theme.shadows.small,
+                },
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>🧘‍♀️ Self-Care</Text>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    { color: theme.colors.text.primary },
+                  ]}
+                >
+                  🧘‍♀️ Self-Care
+                </Text>
                 <TouchableOpacity
                   style={[
                     styles.completeButton,
@@ -434,35 +556,84 @@ export default function Dashboard() {
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={[styles.cardContent, { color: theme.colors.text.muted }]}>{phaseInfo.recovery}</Text>
+              <Text
+                style={[styles.cardContent, { color: theme.colors.text.muted }]}
+              >
+                {phaseInfo.recovery}
+              </Text>
             </View>
           </View>
 
           {/* Progress Summary */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Your Progress</Text>
-            <View style={[
-              styles.progressCard, 
-              { 
-                backgroundColor: theme.colors.background.card,
-                ...theme.shadows.small
-              }
-            ]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                { color: theme.colors.text.primary },
+              ]}
+            >
+              Your Progress
+            </Text>
+            <View
+              style={[
+                styles.progressCard,
+                {
+                  backgroundColor: theme.colors.background.card,
+                  ...theme.shadows.small,
+                },
+              ]}
+            >
               <View style={styles.progressRow}>
-                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Total Points</Text>
-                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                <Text
+                  style={[
+                    styles.progressLabel,
+                    { color: theme.colors.text.muted },
+                  ]}
+                >
+                  Total Points
+                </Text>
+                <Text
+                  style={[
+                    styles.progressValue,
+                    { color: theme.colors.primary },
+                  ]}
+                >
                   {userData.totalPoints || 0}
                 </Text>
               </View>
               <View style={styles.progressRow}>
-                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Current Level</Text>
-                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                <Text
+                  style={[
+                    styles.progressLabel,
+                    { color: theme.colors.text.muted },
+                  ]}
+                >
+                  Current Level
+                </Text>
+                <Text
+                  style={[
+                    styles.progressValue,
+                    { color: theme.colors.primary },
+                  ]}
+                >
                   Level {Math.floor((userData.totalPoints || 0) / 100) + 1}
                 </Text>
               </View>
               <View style={styles.progressRow}>
-                <Text style={[styles.progressLabel, { color: theme.colors.text.muted }]}>Tasks Today</Text>
-                <Text style={[styles.progressValue, { color: theme.colors.primary }]}>
+                <Text
+                  style={[
+                    styles.progressLabel,
+                    { color: theme.colors.text.muted },
+                  ]}
+                >
+                  Tasks Today
+                </Text>
+                <Text
+                  style={[
+                    styles.progressValue,
+                    { color: theme.colors.primary },
+                  ]}
+                >
                   {completedTasks.size}/3
                 </Text>
               </View>

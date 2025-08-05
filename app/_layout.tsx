@@ -4,7 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { checkOnboardingStatus } from '@/utils/storage';
 import { router } from 'expo-router';
-import { ShopProvider } from './ShopContext';
+import { ShopProvider } from './shop-context';
+import { SearchProvider } from '@/SearchContext';
 import {
   View,
   StyleSheet,
@@ -17,8 +18,6 @@ import {
 import {
   Chrome as Home,
   Calendar,
-  User,
-  Award,
   Search,
   ShoppingBag,
   Trophy,
@@ -30,27 +29,29 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePathname } from 'expo-router';
 import { ThemeProvider } from '@/theme/ThemeContext';
 import { useTheme } from '@/hooks/useTheme';
+import { SearchModal } from '@/components/modals';
 
 // Create contexts to share filter states across components
 export const NutritionFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (filter: string) => {},
+  setActiveFilter: (_filter: string) => {},
 });
 
 export const FitnessFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (filter: string) => {},
+  setActiveFilter: (_filter: string) => {},
 });
 
 export const RecoveryFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (filter: string) => {},
+  setActiveFilter: (_filter: string) => {},
 });
 
 // Top Header with Profile and Icons
 function TopHeader() {
   const { theme } = useTheme();
-  
+  const [searchModalVisible, setSearchModalVisible] = useState(false);
+
   const handleProfilePress = () => {
     router.push('/(tabs)/profile');
   };
@@ -59,8 +60,17 @@ function TopHeader() {
     router.push('/(tabs)/achievements');
   };
 
+  const handleSearchPress = () => {
+    setSearchModalVisible(true);
+  };
+
   return (
-    <View style={[styles.topHeader, { backgroundColor: theme.colors.background.card }]}>
+    <View
+      style={[
+        styles.topHeader,
+        { backgroundColor: theme.colors.background.card },
+      ]}
+    >
       <TouchableOpacity
         onPress={handleProfilePress}
         style={styles.profileContainer}
@@ -71,22 +81,39 @@ function TopHeader() {
         />
       </TouchableOpacity>
       <View style={styles.topIcons}>
-        <TouchableOpacity style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}>
+        <TouchableOpacity
+          style={[
+            styles.iconButton,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
+          onPress={handleSearchPress}
+        >
           <Search size={24} color={theme.colors.text.light} />
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}
+        <TouchableOpacity
+          style={[
+            styles.iconButton,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
           onPress={() => router.push('/shop')}
         >
           <ShoppingBag size={24} color={theme.colors.text.light} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleAchievementsPress}
-          style={[styles.iconButton, { backgroundColor: theme.colors.background.highlight }]}
+          style={[
+            styles.iconButton,
+            { backgroundColor: theme.colors.background.highlight },
+          ]}
         >
           <Trophy size={24} color={theme.colors.text.light} />
         </TouchableOpacity>
       </View>
+
+      <SearchModal
+        visible={searchModalVisible}
+        onClose={() => setSearchModalVisible(false)}
+      />
     </View>
   );
 }
@@ -117,7 +144,7 @@ function TopNavButtons() {
   // Define buttons based on current path
   let buttons = [];
   let activeFilter = 'all';
-  let handleButtonPress = (buttonId: string): void => {};
+  let handleButtonPress = (_buttonId: string): void => {};
 
   if (currentPath === '/nutrition') {
     buttons = [
@@ -156,7 +183,10 @@ function TopNavButtons() {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[styles.topButtonsContainer, { backgroundColor: theme.colors.background.card }]}
+      contentContainerStyle={[
+        styles.topButtonsContainer,
+        { backgroundColor: theme.colors.background.card },
+      ]}
     >
       {buttons.map((button) => (
         <TouchableOpacity
@@ -166,7 +196,7 @@ function TopNavButtons() {
             { backgroundColor: theme.colors.background.highlight },
             activeFilter === button.id && [
               styles.topButtonActive,
-              { backgroundColor: theme.colors.background.card }
+              { backgroundColor: theme.colors.background.card },
             ],
           ]}
           onPress={() => handleButtonPress(button.id)}
@@ -177,7 +207,7 @@ function TopNavButtons() {
               { color: theme.colors.text.muted },
               activeFilter === button.id && [
                 styles.topButtonLabelActive,
-                { color: theme.colors.text.primary }
+                { color: theme.colors.text.primary },
               ],
             ]}
           >
@@ -240,10 +270,15 @@ function BottomTabBar() {
   };
 
   return (
-    <View style={[styles.bottomTabBar, { 
-      backgroundColor: theme.colors.background.card,
-      borderTopColor: theme.colors.background.highlight 
-    }]}>
+    <View
+      style={[
+        styles.bottomTabBar,
+        {
+          backgroundColor: theme.colors.background.card,
+          borderTopColor: theme.colors.background.highlight,
+        },
+      ]}
+    >
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = tab.name === activeTabName;
@@ -253,15 +288,20 @@ function BottomTabBar() {
             style={styles.tabButton}
             onPress={() => handleTabPress(tab.name)}
           >
-            <Icon size={24} color={isActive ? theme.colors.primary : theme.colors.text.light} />
-            <Text style={[
-              styles.tabLabel, 
-              { color: theme.colors.text.light },
-              isActive && [
-                styles.activeTabLabel,
-                { color: theme.colors.primary }
-              ]
-            ]}>
+            <Icon
+              size={24}
+              color={isActive ? theme.colors.primary : theme.colors.text.light}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: theme.colors.text.light },
+                isActive && [
+                  styles.activeTabLabel,
+                  { color: theme.colors.primary },
+                ],
+              ]}
+            >
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -274,7 +314,7 @@ function BottomTabBar() {
 // Wrapper component that uses the theme
 function AppWithTheme() {
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState('index');
+  // const [activeTab, setActiveTab] = useState('index'); // Unused state
   const [nutritionFilter, setNutritionFilter] = useState('all');
   const [fitnessFilter, setFitnessFilter] = useState('all');
   const [recoveryFilter, setRecoveryFilter] = useState('all');
@@ -318,7 +358,12 @@ function AppWithTheme() {
             setActiveFilter: setRecoveryFilter,
           }}
         >
-          <View style={[styles.container, { backgroundColor: theme.colors.background.main }]}>
+          <View
+            style={[
+              styles.container,
+              { backgroundColor: theme.colors.background.main },
+            ]}
+          >
             <Stack
               screenOptions={{
                 headerShown: true,
@@ -352,7 +397,11 @@ function AppWithTheme() {
                 options={{ headerShown: true }}
               />
             </Stack>
-            <StatusBar style={theme.colors.background.main === '#121212' ? 'light' : 'dark'} />
+            <StatusBar
+              style={
+                theme.colors.background.main === '#121212' ? 'light' : 'dark'
+              }
+            />
             {!isOnboardingScreen && !shouldHideTabBar() && <BottomTabBar />}
           </View>
         </RecoveryFilterContext.Provider>
@@ -368,7 +417,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <ShopProvider>
-          <AppWithTheme />
+          <SearchProvider>
+            <AppWithTheme />
+          </SearchProvider>
         </ShopProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

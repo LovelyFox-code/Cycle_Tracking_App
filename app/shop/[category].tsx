@@ -1,20 +1,34 @@
 import React from 'react';
-import { Text, View, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ShoppingBag, Pill, Shirt, Dumbbell, Sparkles, PlusCircle } from 'lucide-react-native';
-import BackButton from '@/components/common/BackButton';
+import {
+  ShoppingBag,
+  Pill,
+  Shirt,
+  Dumbbell,
+  Sparkles,
+  PlusCircle,
+} from 'lucide-react-native';
+import BackButton from '@/components/common/back-button';
 import { useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
 import { shopItems, shopCategories } from '@/data/shop';
-import { useShop } from '@/app/ShopContext';
+import { useShop } from '@/app/shop-context';
 
 export default function ShopCategoryScreen() {
   const { theme } = useTheme();
   const styles = createCategoryScreenStyles(theme);
   const { category } = useLocalSearchParams<{ category: string }>();
   const { addToCart } = useShop();
-  
+
   const shopStyles = StyleSheet.create({
     headerWithBack: {
       flexDirection: 'row',
@@ -63,14 +77,14 @@ export default function ShopCategoryScreen() {
   });
 
   // Get the current category info
-  const categoryInfo = shopCategories.find(cat => cat.id === category) || {
+  const categoryInfo = shopCategories.find((cat) => cat.id === category) || {
     name: 'Products',
     description: 'Browse our products',
-    icon: 'shopping-bag'
+    icon: 'shopping-bag',
   };
 
   // Filter items by category
-  const filteredItems = shopItems.filter(item => {
+  const filteredItems = shopItems.filter((item) => {
     if (category === 'all') return true;
     return item.category === category;
   });
@@ -114,7 +128,8 @@ export default function ShopCategoryScreen() {
               >
                 <View style={styles.iconContainer}>
                   {getIconComponent(
-                    shopCategories.find(cat => cat.id === item.category)?.icon || 'shopping-bag'
+                    shopCategories.find((cat) => cat.id === item.category)
+                      ?.icon || 'shopping-bag'
                   )}
                 </View>
                 <View style={styles.cardInfo}>
@@ -128,23 +143,32 @@ export default function ShopCategoryScreen() {
                 </View>
                 <View>
                   <View style={shopStyles.priceContainer}>
-                    <Text style={shopStyles.priceText}>${item.price.toFixed(2)}</Text>
+                    <Text style={shopStyles.priceText}>
+                      ${item.price.toFixed(2)}
+                    </Text>
                   </View>
                   {item.points && (
                     <View style={styles.pointsContainer}>
-                      <Text style={styles.pointsText}>{item.points} points</Text>
+                      <Text style={styles.pointsText}>
+                        {item.points} points
+                      </Text>
                     </View>
                   )}
                   {!item.inStock ? (
                     <View style={shopStyles.outOfStockBadge}>
-                      <Text style={shopStyles.outOfStockText}>Out of Stock</Text>
+                      <Text style={shopStyles.outOfStockText}>
+                        Out of Stock
+                      </Text>
                     </View>
                   ) : (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       style={shopStyles.addToCartButton}
                       onPress={() => {
                         addToCart(item);
-                        Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
+                        Alert.alert(
+                          'Added to Cart',
+                          `${item.name} has been added to your cart.`
+                        );
                       }}
                     >
                       <PlusCircle size={16} color={theme.colors.text.light} />
@@ -166,4 +190,3 @@ export default function ShopCategoryScreen() {
     </SafeAreaView>
   );
 }
-

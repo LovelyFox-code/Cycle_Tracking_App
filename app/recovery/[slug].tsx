@@ -9,15 +9,14 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { recoveryItems } from '@/data/recovery';
-import { Recovery } from '@/types/content';
-import BackButton from '@/components/common/BackButton';
+import BackButton from '@/components/common/back-button';
 
 export default function RecoveryDetail() {
   const { theme } = useTheme();
   const { slug } = useLocalSearchParams();
   const slugString = typeof slug === 'string' ? slug : '';
-  
-  const recovery = recoveryItems.find(item => item.slug === slugString);
+
+  const recovery = recoveryItems.find((item) => item.slug === slugString);
 
   if (!recovery) {
     return (

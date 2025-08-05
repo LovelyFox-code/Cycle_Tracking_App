@@ -1,8 +1,7 @@
-// components/common/ProgressSummary.tsx
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { colors, spacing, typography } from '@/styles/theme';
-import Card from './Card';
-import SectionTitle from './SectionTitle';
+import Card from './card';
+import SectionTitle from './section-title';
 
 type ProgressItem = {
   label: string;

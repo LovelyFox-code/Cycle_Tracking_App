@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
-import { shopItems, ShopItem } from '@/data/shop';
+import { ShopItem } from '@/data/shop'; // Removed unused shopItems import
 
 type ShopContextType = {
   cartItems: ShopItem[];
@@ -21,7 +21,9 @@ const ShopContext = createContext<ShopContextType>({
 
 export const useShop = () => useContext(ShopContext);
 
-export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [cartItems, setCartItems] = useState<ShopItem[]>([]);
 
   const addToCart = (item: ShopItem) => {
@@ -30,7 +32,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const removeFromCart = (itemId: string) => {
-    const index = cartItems.findIndex(item => item.id === itemId);
+    const index = cartItems.findIndex((item) => item.id === itemId);
     if (index !== -1) {
       const newCartItems = [...cartItems];
       newCartItems.splice(index, 1);

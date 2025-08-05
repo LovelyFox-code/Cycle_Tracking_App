@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import CalendarDay from './CalendarDay';
+import CalendarDay from './calendar-day';
 import { colors, typography, spacing } from '@/styles/theme';
 
 type CalendarDay = {

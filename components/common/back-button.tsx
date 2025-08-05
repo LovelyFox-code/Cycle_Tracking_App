@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
+import { combineStyles } from '@/utils/styles';
 
 type BackButtonProps = {
   onPress?: () => void;
@@ -28,15 +29,15 @@ export default function BackButton({
   };
 
   return (
-    <TouchableOpacity 
-      style={[
-        styles.backButton, 
+    <TouchableOpacity
+      style={combineStyles<ViewStyle>(
+        styles.backButton,
         {
           backgroundColor: `${theme.colors.background.card}E6`,
           ...theme.shadows.small,
         },
         style
-      ]} 
+      )}
       onPress={handlePress}
     >
       <ArrowLeft size={size} color={color || theme.colors.text.primary} />

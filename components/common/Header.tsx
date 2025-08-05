@@ -1,5 +1,11 @@
-// components/common/Header.tsx
-import { View, Text, StyleSheet, Image, TouchableOpacity, ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 import { Search, ShoppingBag, Trophy } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/styles/theme';
 import { router } from 'expo-router';
@@ -40,7 +46,7 @@ export default function Header({
             <TouchableOpacity style={styles.iconButton}>
               <Search size={24} color={colors.text.light} />
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.iconButton}
               onPress={() => router.push('/shop')}
             >
@@ -84,13 +90,14 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
+    fontWeight: '700', // Using '700' instead of typography.fontWeight.bold
     color: colors.text.primary,
     marginBottom: spacing.xs,
   },
   subtitle: {
     fontSize: typography.fontSize.m,
     color: colors.text.muted,
+    fontWeight: '400', // Adding explicit fontWeight
   },
   rightContainer: {
     flexDirection: 'row',

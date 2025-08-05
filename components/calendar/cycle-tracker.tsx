@@ -1,10 +1,17 @@
 // components/calendar/CycleTracker.tsx
-import { View, Text, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { Heart, Droplets, Sun, Leaf } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/styles/theme';
-import Card from '../common/Card';
-import ProgressBar from '../common/ProgressBar';
-import Icon from '../common/Icon';
+import Card from '../common/card';
+import ProgressBar from '../common/progress-bar';
+import Icon from '../common/icon';
 
 type CycleTrackerProps = {
   cycleDay: number;
@@ -22,7 +29,7 @@ export default function CycleTracker({
   style,
 }: CycleTrackerProps) {
   type PhaseKey = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
-  
+
   const isValidPhase = (phase: string): phase is PhaseKey => {
     return ['menstrual', 'follicular', 'ovulation', 'luteal'].includes(phase);
   };

@@ -73,7 +73,19 @@ npm install
 npm run dev
 ```
 
-4. Open the app on your device using Expo Go or run in a simulator
+4. Type checking
+```
+# Full TypeScript check
+npm run typecheck
+
+# Basic TypeScript check (less strict)
+npm run typecheck:basic
+
+# Run TypeScript check in watch mode
+npm run typecheck:watch
+```
+
+5. Open the app on your device using Expo Go or run in a simulator
 
 ## Tech Stack
 

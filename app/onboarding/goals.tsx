@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Target, ArrowRight, ArrowLeft } from 'lucide-react-native';
@@ -7,7 +14,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 export default function GoalsScreen() {
   const params = useLocalSearchParams();
-  const [selectedGoals, setSelectedGoals] = useState([]);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const goals = [
     {
@@ -48,9 +55,9 @@ export default function GoalsScreen() {
     },
   ];
 
-  const toggleGoal = (goalId) => {
+  const toggleGoal = (goalId: string) => {
     if (selectedGoals.includes(goalId)) {
-      setSelectedGoals(selectedGoals.filter(id => id !== goalId));
+      setSelectedGoals(selectedGoals.filter((id) => id !== goalId));
     } else if (selectedGoals.length < 3) {
       setSelectedGoals([...selectedGoals, goalId]);
     } else {
@@ -60,13 +67,16 @@ export default function GoalsScreen() {
 
   const handleContinue = () => {
     if (selectedGoals.length === 0) {
-      Alert.alert('Please select goals', 'Choose at least one goal to personalize your experience.');
+      Alert.alert(
+        'Please select goals',
+        'Choose at least one goal to personalize your experience.'
+      );
       return;
     }
 
     const completeData = {
       lastPeriodDate: params.lastPeriodDate,
-      cycleLength: parseInt(params.cycleLength),
+      cycleLength: parseInt(params.cycleLength as string),
       goals: selectedGoals,
     };
 
@@ -78,10 +88,7 @@ export default function GoalsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#FFE5E5', '#FAFAFA']}
-        style={styles.background}
-      >
+      <LinearGradient colors={['#FFE5E5', '#FAFAFA']} style={styles.background}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
             <ArrowLeft size={24} color="#6B7280" />
@@ -89,13 +96,17 @@ export default function GoalsScreen() {
           <Text style={styles.step}>Step 2 of 3</Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
             <View style={styles.titleContainer}>
               <Target size={32} color="#FF6B6B" />
               <Text style={styles.title}>What are your wellness goals?</Text>
               <Text style={styles.subtitle}>
-                Select up to 3 goals that matter most to you. We'll personalize your experience accordingly.
+                Select up to 3 goals that matter most to you. We'll personalize
+                your experience accordingly.
               </Text>
             </View>
 
@@ -111,25 +122,33 @@ export default function GoalsScreen() {
                 >
                   <View style={styles.goalHeader}>
                     <Text style={styles.goalEmoji}>{goal.emoji}</Text>
-                    <View style={[
-                      styles.checkbox,
-                      selectedGoals.includes(goal.id) && styles.checkedBox,
-                    ]}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        selectedGoals.includes(goal.id) && styles.checkedBox,
+                      ]}
+                    >
                       {selectedGoals.includes(goal.id) && (
                         <Text style={styles.checkmark}>✓</Text>
                       )}
                     </View>
                   </View>
-                  <Text style={[
-                    styles.goalTitle,
-                    selectedGoals.includes(goal.id) && styles.selectedGoalText,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.goalTitle,
+                      selectedGoals.includes(goal.id) &&
+                        styles.selectedGoalText,
+                    ]}
+                  >
                     {goal.title}
                   </Text>
-                  <Text style={[
-                    styles.goalDescription,
-                    selectedGoals.includes(goal.id) && styles.selectedGoalDescription,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.goalDescription,
+                      selectedGoals.includes(goal.id) &&
+                        styles.selectedGoalDescription,
+                    ]}
+                  >
                     {goal.description}
                   </Text>
                 </TouchableOpacity>
@@ -142,7 +161,10 @@ export default function GoalsScreen() {
               </Text>
             </View>
 
-            <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+            <TouchableOpacity
+              style={styles.continueButton}
+              onPress={handleContinue}
+            >
               <LinearGradient
                 colors={['#FF6B6B', '#FF8E53']}
                 style={styles.buttonGradient}

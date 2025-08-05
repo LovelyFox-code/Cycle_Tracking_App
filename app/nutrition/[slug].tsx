@@ -11,7 +11,7 @@ import {
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { recipes } from '@/data/recipes';
-import BackButton from '@/components/common/BackButton';
+import BackButton from '@/components/common/back-button';
 
 export default function RecipeDetailScreen() {
   const { theme } = useTheme();

@@ -1,4 +1,3 @@
-// components/common/Icon.tsx
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { colors } from '@/styles/theme';
 import React from 'react';

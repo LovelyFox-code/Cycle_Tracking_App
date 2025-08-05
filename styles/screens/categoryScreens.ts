@@ -2,7 +2,7 @@
 import { StyleSheet } from 'react-native';
 
 // We'll create a function that returns styles based on the theme
-export const createCategoryScreenStyles = (theme) => StyleSheet.create({
+export const createCategoryScreenStyles = (theme: any) => StyleSheet.create({
   // Container and layout styles
   container: {
     flex: 1,
@@ -13,7 +13,7 @@ export const createCategoryScreenStyles = (theme) => StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  
+
   // Header styles
   header: {
     marginBottom: 24,
@@ -28,12 +28,12 @@ export const createCategoryScreenStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     color: theme.colors.text.muted,
   },
-  
+
   // List styles
   cardList: {
     marginBottom: 20,
   },
-  
+
   // Card styles
   card: {
     flexDirection: 'row',
@@ -66,7 +66,7 @@ export const createCategoryScreenStyles = (theme) => StyleSheet.create({
     fontSize: 14,
     color: theme.colors.text.muted,
   },
-  
+
   // Points container
   pointsContainer: {
     backgroundColor: `${theme.colors.text.light}20`,
@@ -79,7 +79,7 @@ export const createCategoryScreenStyles = (theme) => StyleSheet.create({
     fontWeight: '500',
     color: theme.colors.text.secondary,
   },
-  
+
   // Premium badge
   premiumBadge: {
     backgroundColor: `${theme.colors.status.warning}30`,
@@ -94,7 +94,7 @@ export const createCategoryScreenStyles = (theme) => StyleSheet.create({
     fontWeight: '700',
     color: theme.colors.accent,
   },
-  
+
   // Empty state
   emptyState: {
     padding: 40,

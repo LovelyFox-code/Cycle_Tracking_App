@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { workouts } from '@/data/workouts';
-import BackButton from '@/components/common/BackButton';
+import BackButton from '@/components/common/back-button';
 
 export default function WorkoutDetailScreen() {
   const { theme } = useTheme();

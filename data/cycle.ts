@@ -1,4 +1,4 @@
-import { CycleData, PhaseInfo } from '@/types/content';
+import { CycleData } from '@/types/content';
 
 export const cycleData: CycleData = {
   phases: {

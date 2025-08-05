@@ -14,9 +14,7 @@ import { router } from 'expo-router';
 
 // Helper function to calculate days difference between two dates
 const calculateDaysDiff = (date1: Date, date2: Date): number => {
-  return Math.ceil(
-    (date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)
-  );
+  return Math.ceil((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
 };
 
 export default function CycleInfoScreen() {
@@ -30,7 +28,7 @@ export default function CycleInfoScreen() {
   // Generate calendar days for current month
   const generateCalendarDays = () => {
     const firstDay = new Date(currentYear, currentMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    // const lastDay = new Date(currentYear, currentMonth + 1, 0); // Unused variable
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 

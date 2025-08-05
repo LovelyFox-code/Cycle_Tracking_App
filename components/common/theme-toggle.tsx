@@ -1,4 +1,3 @@
-// components/common/ThemeToggle.tsx
 import React from 'react';
 import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import { Sun, Moon, Palette } from 'lucide-react-native';
@@ -9,18 +8,21 @@ type ThemeToggleProps = {
   showBrandOptions?: boolean;
 };
 
-export default function ThemeToggle({ showBrandOptions = false }: ThemeToggleProps) {
-  const { theme, themeMode, brandVariant, setThemeMode, setBrandVariant } = useTheme();
-  
+export default function ThemeToggle({
+  showBrandOptions = false,
+}: ThemeToggleProps) {
+  const { theme, themeMode, brandVariant, setThemeMode, setBrandVariant } =
+    useTheme();
+
   const toggleTheme = () => {
     const newMode: ThemeMode = themeMode === 'light' ? 'dark' : 'light';
     setThemeMode(newMode);
   };
-  
+
   const selectBrandVariant = (variant: BrandVariant) => {
     setBrandVariant(variant);
   };
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.themeToggleRow}>
@@ -37,44 +39,56 @@ export default function ThemeToggle({ showBrandOptions = false }: ThemeTogglePro
         <Switch
           value={themeMode === 'dark'}
           onValueChange={toggleTheme}
-          trackColor={{ 
-            false: theme.colors.text.light, 
-            true: theme.colors.primary 
+          trackColor={{
+            false: theme.colors.text.light,
+            true: theme.colors.primary,
           }}
           thumbColor={theme.colors.background.card}
         />
       </View>
-      
+
       {showBrandOptions && (
         <View style={styles.brandOptions}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.text.primary }]}
+          >
             Brand Theme
           </Text>
-          
+
           <TouchableOpacity
             style={[
               styles.brandOption,
               brandVariant === 'default' && styles.selectedBrandOption,
-              { borderColor: theme.colors.primary }
+              { borderColor: theme.colors.primary },
             ]}
             onPress={() => selectBrandVariant('default')}
           >
             <Palette size={20} color={theme.colors.text.primary} />
-            <Text style={[styles.brandOptionText, { color: theme.colors.text.primary }]}>
+            <Text
+              style={[
+                styles.brandOptionText,
+                { color: theme.colors.text.primary },
+              ]}
+            >
               Default
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[
               styles.brandOption,
               brandVariant === 'brandA' && styles.selectedBrandOption,
-              { borderColor: theme.colors.primary }
+              { borderColor: theme.colors.primary },
             ]}
             onPress={() => selectBrandVariant('brandA')}
           >
             <Palette size={20} color={theme.colors.text.primary} />
-            <Text style={[styles.brandOptionText, { color: theme.colors.text.primary }]}>
+            <Text
+              style={[
+                styles.brandOptionText,
+                { color: theme.colors.text.primary },
+              ]}
+            >
               Brand A
             </Text>
           </TouchableOpacity>

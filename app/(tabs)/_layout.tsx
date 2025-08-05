@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+// import { Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { Slot } from 'expo-router';
 

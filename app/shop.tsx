@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Text,
   View,
@@ -15,7 +15,6 @@ import {
   Sparkles,
 } from 'lucide-react-native';
 import { router } from 'expo-router';
-import BackButton from '@/components/common/BackButton';
 import { useTheme } from '@/hooks/useTheme';
 import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
 import { shopCategories } from '@/data/shop';
@@ -124,7 +123,7 @@ export default function ShopScreen() {
         </ScrollView>
 
         <View style={styles.cardList}>
-          {shopCategories.map((category, index) => {
+          {shopCategories.map((category) => {
             // Only show the selected category or all categories
             if (activeCategory !== 'all' && activeCategory !== category.id) {
               return null;

@@ -1,4 +1,3 @@
-// components/common/SectionTitle.tsx
 import { Text, StyleSheet, TextStyle } from 'react-native';
 import { colors, typography } from '@/styles/theme';
 
@@ -15,12 +14,7 @@ export default function SectionTitle({
   color = colors.text.primary,
   size = 'medium',
 }: SectionTitleProps) {
-  const titleStyles = [
-    styles.title,
-    styles[`${size}Title`],
-    { color },
-    style,
-  ];
+  const titleStyles = [styles.title, styles[`${size}Title`], { color }, style];
 
   return <Text style={titleStyles}>{title}</Text>;
 }

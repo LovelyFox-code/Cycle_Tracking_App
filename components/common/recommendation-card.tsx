@@ -1,8 +1,13 @@
-// components/common/RecommendationCard.tsx
-import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 import { CircleCheck } from 'lucide-react-native';
-import { colors, spacing, borderRadius, typography, shadows } from '@/styles/theme';
-import Card from './Card';
+import { colors, spacing, typography, shadows } from '@/styles/theme';
+import Card from './card';
 
 type RecommendationCardProps = {
   title: string;
@@ -27,7 +32,8 @@ export default function RecommendationCard({
     <Card style={[styles.card, style]}>
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle}>
-          {icon && `${icon} `}{title}
+          {icon && `${icon} `}
+          {title}
         </Text>
         {onComplete && (
           <TouchableOpacity

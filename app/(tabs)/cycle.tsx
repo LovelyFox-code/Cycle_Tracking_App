@@ -5,6 +5,8 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  TextStyle,
+  ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,6 +25,7 @@ import {
   calculateCycleDay,
 } from '@/utils/cycleCalculations';
 import { useTheme } from '@/hooks/useTheme';
+import { combineStyles } from '@/utils/styles';
 
 type UserData = {
   lastPeriodDate: string;
@@ -69,7 +72,7 @@ export default function CycleScreen() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    // const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
@@ -83,7 +86,7 @@ export default function CycleScreen() {
       date.setDate(date.getDate() + 1)
     ) {
       const cycleDay = calculateCycleDay(
-        new Date(userData.lastPeriodDate),
+        userData.lastPeriodDate,
         userData.cycleLength,
         new Date(date)
       );
@@ -194,10 +197,18 @@ export default function CycleScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+          <Text
+            style={combineStyles<TextStyle>(styles.title, {
+              color: theme.colors.text.primary,
+            })}
+          >
             Cycle Calendar
           </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>
+          <Text
+            style={combineStyles<TextStyle>(styles.subtitle, {
+              color: theme.colors.text.muted,
+            })}
+          >
             Track your phases and patterns
           </Text>
         </View>
@@ -208,21 +219,26 @@ export default function CycleScreen() {
             theme.colors.background.highlight,
             theme.colors.background.highlight,
           ]}
-          style={[styles.currentPhaseCard, { ...theme.shadows.medium }]}
+          style={combineStyles<ViewStyle>(styles.currentPhaseCard, {
+            ...theme.shadows.medium,
+          })}
         >
           <View style={styles.phaseRow}>
             {getPhaseIcon(currentPhase)}
             <Text
-              style={[
-                styles.currentPhaseText,
-                { color: theme.colors.text.primary },
-              ]}
+              style={combineStyles<TextStyle>(styles.currentPhaseText, {
+                color: theme.colors.text.primary,
+              })}
             >
               {currentPhase?.charAt(0).toUpperCase() + currentPhase?.slice(1)}{' '}
               Phase
             </Text>
           </View>
-          <Text style={[styles.cycleInfo, { color: theme.colors.text.muted }]}>
+          <Text
+            style={combineStyles<TextStyle>(styles.cycleInfo, {
+              color: theme.colors.text.muted,
+            })}
+          >
             Cycle Length: {userData.cycleLength} days
           </Text>
         </LinearGradient>
