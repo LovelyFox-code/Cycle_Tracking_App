@@ -6,6 +6,7 @@ import { RecoveryFilterContext } from '@/app/_layout';
 import { Link } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
+import { recoveryItems } from '@/data/recovery';
 
 export default function RecoveryScreen() {
   const { theme } = useTheme();
@@ -80,69 +81,66 @@ export default function RecoveryScreen() {
     </SafeAreaView>
   );
 }
-
-const recoveryItems = [
-  {
-    title: 'Deep Breathing',
-    description: '5 minutes of focused breathing',
-    points: 10,
-    recoveryType: 'meditation',
-    isPremium: false,
-    category: 'mindset',
-    slug: 'deep-breathing',
-  },
-  {
-    title: 'Stretching',
-    description: '10-minute gentle stretch routine',
-    points: 15,
-    recoveryType: 'stretching',
-    isPremium: false,
-    category: 'general',
-    slug: 'stretching',
-  },
-  {
-    title: 'Meditation',
-    description: 'Guided meditation session',
-    points: 20,
-    recoveryType: 'meditation',
-    isPremium: true,
-    category: 'mindset',
-    slug: 'meditation',
-  },
-  {
-    title: 'Epsom Salt Bath',
-    description: '20-minute relaxation soak',
-    points: 15,
-    recoveryType: 'stretching',
-    isPremium: false,
-    category: 'general',
-    slug: 'epsom-salt-bath',
-  },
-  {
-    title: 'Sleep Hygiene',
-    description: 'Prepare for quality sleep',
-    points: 10,
-    recoveryType: 'sleep',
-    isPremium: false,
-    category: 'general',
-    slug: 'sleep-hygiene',
-  },
-  {
-    title: 'Quick Desk Stretch',
-    description: '2-minute office recovery',
-    points: 5,
-    recoveryType: 'stretching',
-    isPremium: false,
-    category: 'business',
-    slug: 'quick-desk-stretch',
-  },
-  {
-    title: 'Stress Management',
-    description: 'Advanced relaxation techniques',
-    points: 25,
-    recoveryType: 'sleep',
-    isPremium: true,
-    category: 'business',
-    slug: 'stress-management',
-  },
-];
+//     title: 'Deep Breathing',
+//     description: '5 minutes of focused breathing',
+//     points: 10,
+//     recoveryType: 'meditation',
+//     isPremium: false,
+//     category: 'mindset',
+//     slug: 'deep-breathing',
+//   },
+//   {
+//     title: 'Stretching',
+//     description: '10-minute gentle stretch routine',
+//     points: 15,
+//     recoveryType: 'stretching',
+//     isPremium: false,
+//     category: 'general',
+//     slug: 'stretching',
+//   },
+//   {
+//     title: 'Meditation',
+//     description: 'Guided meditation session',
+//     points: 20,
+//     recoveryType: 'meditation',
+//     isPremium: true,
+//     category: 'mindset',
+//     slug: 'meditation',
+//   },
+//   {
+//     title: 'Epsom Salt Bath',
+//     description: '20-minute relaxation soak',
+//     points: 15,
+//     recoveryType: 'stretching',
+//     isPremium: false,
+//     category: 'general',
+//     slug: 'epsom-salt-bath',
+//   },
+//   {
+//     title: 'Sleep Hygiene',
+//     description: 'Prepare for quality sleep',
+//     points: 10,
+//     recoveryType: 'sleep',
+//     isPremium: false,
+//     category: 'general',
+//     slug: 'sleep-hygiene',
+//   },
+//   {
+//     title: 'Quick Desk Stretch',
+//     description: '2-minute office recovery',
+//     points: 5,
+//     recoveryType: 'stretching',
+//     isPremium: false,
+//     category: 'business',
+//     slug: 'quick-desk-stretch',
+//   },
+//   {
+//     title: 'Stress Management',
+//     description: 'Advanced relaxation techniques',
+//     points: 25,
+//     recoveryType: 'sleep',
+//     isPremium: true,
+//     category: 'business',
+//     slug: 'stress-management',
+//   },
+// ];

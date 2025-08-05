@@ -160,12 +160,17 @@ export default function CycleScreen() {
 
   if (!userData) {
     return (
-      <SafeAreaView 
-        style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background.main },
+        ]}
         edges={['left', 'right']}
       >
         <View style={styles.centerContent}>
-          <Text style={[styles.loadingText, { color: theme.colors.text.muted }]}>
+          <Text
+            style={[styles.loadingText, { color: theme.colors.text.muted }]}
+          >
             Loading cycle data...
           </Text>
         </View>
@@ -179,25 +184,40 @@ export default function CycleScreen() {
   );
 
   return (
-    <SafeAreaView 
-      style={[styles.container, { backgroundColor: theme.colors.background.main }]} 
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background.main },
+      ]}
       edges={['left', 'right']}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text.primary }]}>Cycle Calendar</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>Track your phases and patterns</Text>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+            Cycle Calendar
+          </Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text.muted }]}>
+            Track your phases and patterns
+          </Text>
         </View>
 
         {/* Current Phase Info */}
         <LinearGradient
-          colors={[theme.colors.background.highlight, theme.colors.background.highlight]}
+          colors={[
+            theme.colors.background.highlight,
+            theme.colors.background.highlight,
+          ]}
           style={[styles.currentPhaseCard, { ...theme.shadows.medium }]}
         >
           <View style={styles.phaseRow}>
             {getPhaseIcon(currentPhase)}
-            <Text style={[styles.currentPhaseText, { color: theme.colors.text.primary }]}>
+            <Text
+              style={[
+                styles.currentPhaseText,
+                { color: theme.colors.text.primary },
+              ]}
+            >
               {currentPhase?.charAt(0).toUpperCase() + currentPhase?.slice(1)}{' '}
               Phase
             </Text>
@@ -211,36 +231,52 @@ export default function CycleScreen() {
         <View style={styles.calendarHeader}>
           <TouchableOpacity
             onPress={() => navigateMonth(-1)}
-            style={[styles.navButton, { 
-              backgroundColor: theme.colors.background.card,
-              ...theme.shadows.small
-            }]}
+            style={[
+              styles.navButton,
+              {
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small,
+              },
+            ]}
           >
             <ChevronLeft size={24} color={theme.colors.text.muted} />
           </TouchableOpacity>
-          <Text style={[styles.monthYear, { color: theme.colors.text.primary }]}>
+          <Text
+            style={[styles.monthYear, { color: theme.colors.text.primary }]}
+          >
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </Text>
           <TouchableOpacity
             onPress={() => navigateMonth(1)}
-            style={[styles.navButton, { 
-              backgroundColor: theme.colors.background.card,
-              ...theme.shadows.small
-            }]}
+            style={[
+              styles.navButton,
+              {
+                backgroundColor: theme.colors.background.card,
+                ...theme.shadows.small,
+              },
+            ]}
           >
             <ChevronRight size={24} color={theme.colors.text.muted} />
           </TouchableOpacity>
         </View>
 
         {/* Calendar Grid */}
-        <View style={[styles.calendar, { 
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.medium
-        }]}>
+        <View
+          style={[
+            styles.calendar,
+            {
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.medium,
+            },
+          ]}
+        >
           {/* Day headers */}
           <View style={styles.dayHeaders}>
             {dayNames.map((day) => (
-              <Text key={day} style={[styles.dayHeader, { color: theme.colors.text.muted }]}>
+              <Text
+                key={day}
+                style={[styles.dayHeader, { color: theme.colors.text.muted }]}
+              >
                 {day}
               </Text>
             ))}
@@ -254,7 +290,10 @@ export default function CycleScreen() {
                   style={[
                     styles.dayCircle,
                     day.phase && { backgroundColor: getPhaseColor(day.phase) },
-                    day.isToday && [styles.todayCircle, { borderColor: theme.colors.primary }],
+                    day.isToday && [
+                      styles.todayCircle,
+                      { borderColor: theme.colors.primary },
+                    ],
                     !day.isCurrentMonth && styles.otherMonth,
                   ]}
                 >
@@ -262,8 +301,14 @@ export default function CycleScreen() {
                     style={[
                       styles.dayText,
                       { color: theme.colors.text.primary },
-                      day.phase && [styles.phaseText, { color: theme.colors.background.card }],
-                      !day.isCurrentMonth && [styles.otherMonthText, { color: theme.colors.text.light }],
+                      day.phase && [
+                        styles.phaseText,
+                        { color: theme.colors.background.card },
+                      ],
+                      !day.isCurrentMonth && [
+                        styles.otherMonthText,
+                        { color: theme.colors.text.light },
+                      ],
                       day.isToday && styles.todayText,
                     ]}
                   >
@@ -271,7 +316,12 @@ export default function CycleScreen() {
                   </Text>
                 </View>
                 {day.cycleDay > 0 && day.isCurrentMonth && (
-                  <Text style={[styles.cycleDayText, { color: theme.colors.text.muted }]}>
+                  <Text
+                    style={[
+                      styles.cycleDayText,
+                      { color: theme.colors.text.muted },
+                    ]}
+                  >
                     C{day.cycleDay}
                   </Text>
                 )}
@@ -281,11 +331,20 @@ export default function CycleScreen() {
         </View>
 
         {/* Phase Legend */}
-        <View style={[styles.legend, { 
-          backgroundColor: theme.colors.background.card,
-          ...theme.shadows.medium
-        }]}>
-          <Text style={[styles.legendTitle, { color: theme.colors.text.primary }]}>Phase Legend</Text>
+        <View
+          style={[
+            styles.legend,
+            {
+              backgroundColor: theme.colors.background.card,
+              ...theme.shadows.medium,
+            },
+          ]}
+        >
+          <Text
+            style={[styles.legendTitle, { color: theme.colors.text.primary }]}
+          >
+            Phase Legend
+          </Text>
           <View style={styles.legendGrid}>
             {[
               {
@@ -318,7 +377,14 @@ export default function CycleScreen() {
                 >
                   {item.icon}
                 </View>
-                <Text style={[styles.legendText, { color: theme.colors.text.muted }]}>{item.name}</Text>
+                <Text
+                  style={[
+                    styles.legendText,
+                    { color: theme.colors.text.muted },
+                  ]}
+                >
+                  {item.name}
+                </Text>
               </View>
             ))}
           </View>

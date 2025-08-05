@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Calendar, ArrowRight, ArrowLeft } from 'lucide-react-native';
 import { router } from 'expo-router';
 
+// Helper function to calculate days difference between two dates
+const calculateDaysDiff = (date1: Date, date2: Date): number => {
+  return Math.ceil(
+    (date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)
+  );
+};
+
 export default function CycleInfoScreen() {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [cycleLength, setCycleLength] = useState(28);
 
   const today = new Date();
@@ -24,20 +38,22 @@ export default function CycleInfoScreen() {
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
-      
+
       // Only show dates from the past 35 days
-      const daysDiff = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
+      const daysDiff = calculateDaysDiff(new Date(today), new Date(date));
+
       if (daysDiff >= 0 && daysDiff <= 35) {
         days.push(date);
       }
     }
-    return days.filter(date => date.getMonth() === currentMonth);
+    return days.filter((date) => date.getMonth() === currentMonth);
   };
 
   const calendarDays = generateCalendarDays();
 
-  const handleDateSelect = (date) => {
-    const daysDiff = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
+  const handleDateSelect = (date: Date) => {
+    const daysDiff = calculateDaysDiff(today, date);
+
     if (daysDiff >= 0 && daysDiff <= 35) {
       setSelectedDate(date);
     }
@@ -45,7 +61,10 @@ export default function CycleInfoScreen() {
 
   const handleContinue = () => {
     if (!selectedDate) {
-      Alert.alert('Please select a date', 'Choose the first day of your last period to continue.');
+      Alert.alert(
+        'Please select a date',
+        'Choose the first day of your last period to continue.'
+      );
       return;
     }
 
@@ -62,16 +81,23 @@ export default function CycleInfoScreen() {
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#FFE5E5', '#FAFAFA']}
-        style={styles.background}
-      >
+      <LinearGradient colors={['#FFE5E5', '#FAFAFA']} style={styles.background}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
             <ArrowLeft size={24} color="#6B7280" />
@@ -79,13 +105,17 @@ export default function CycleInfoScreen() {
           <Text style={styles.step}>Step 1 of 3</Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
             <View style={styles.titleContainer}>
               <Calendar size={32} color="#FF6B6B" />
               <Text style={styles.title}>Tell us about your cycle</Text>
               <Text style={styles.subtitle}>
-                When was the first day of your last period? This helps us personalize your experience.
+                When was the first day of your last period? This helps us
+                personalize your experience.
               </Text>
             </View>
 
@@ -94,19 +124,26 @@ export default function CycleInfoScreen() {
               <Text style={styles.monthTitle}>
                 {monthNames[currentMonth]} {currentYear}
               </Text>
-              
+
               <View style={styles.calendar}>
                 <View style={styles.dayHeaders}>
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <Text key={day} style={styles.dayHeader}>{day}</Text>
-                  ))}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
+                    (day) => (
+                      <Text key={day} style={styles.dayHeader}>
+                        {day}
+                      </Text>
+                    )
+                  )}
                 </View>
-                
+
                 <View style={styles.calendarGrid}>
                   {calendarDays.map((date, index) => {
-                    const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-                    const isToday = date.toDateString() === today.toDateString();
-                    const daysDiff = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
+                    const isSelected =
+                      selectedDate &&
+                      date.toDateString() === selectedDate.toDateString();
+                    const isToday =
+                      date.toDateString() === today.toDateString();
+                    const daysDiff = calculateDaysDiff(today, date);
                     const isSelectable = daysDiff >= 0 && daysDiff <= 35;
 
                     return (
@@ -140,7 +177,9 @@ export default function CycleInfoScreen() {
 
             {/* Cycle Length */}
             <View style={styles.cycleLengthContainer}>
-              <Text style={styles.cycleLengthTitle}>Average cycle length (days)</Text>
+              <Text style={styles.cycleLengthTitle}>
+                Average cycle length (days)
+              </Text>
               <View style={styles.cycleLengthButtons}>
                 {[25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].map((length) => (
                   <TouchableOpacity
@@ -165,7 +204,10 @@ export default function CycleInfoScreen() {
             </View>
 
             {/* Continue Button */}
-            <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+            <TouchableOpacity
+              style={styles.continueButton}
+              onPress={handleContinue}
+            >
               <LinearGradient
                 colors={['#FF6B6B', '#FF8E53']}
                 style={styles.buttonGradient}

@@ -6,6 +6,7 @@ import { NutritionFilterContext } from '@/app/_layout';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { createCategoryScreenStyles } from '@/styles/screens/categoryScreens';
+import { recipes } from '@/data/recipes';
 
 export default function NutritionScreen() {
   const { theme } = useTheme();
@@ -13,7 +14,7 @@ export default function NutritionScreen() {
   const styles = createCategoryScreenStyles(theme);
 
   // Filter nutrition items based on the active filter
-  const filteredItems = nutritionItems.filter((item) => {
+  const filteredItems = recipes.filter((item) => {
     if (activeFilter === 'vegan') {
       return item.dietType === 'vegan';
     } else if (activeFilter === 'vegetarian') {
@@ -80,69 +81,3 @@ export default function NutritionScreen() {
     </SafeAreaView>
   );
 }
-
-const nutritionItems = [
-  {
-    title: 'Hormone-Balancing Breakfast',
-    description: 'Protein-rich morning meal',
-    points: 15,
-    dietType: 'vegetarian',
-    isPremium: false,
-    category: 'general',
-    slug: 'hormone-balancing-breakfast',
-  },
-  {
-    title: 'Anti-Inflammatory Lunch',
-    description: 'Colorful veggies and healthy fats',
-    points: 15,
-    dietType: 'vegan',
-    isPremium: true,
-    category: 'general',
-    slug: 'anti-inflammatory-lunch',
-  },
-  {
-    title: 'Energy-Boosting Snack',
-    description: 'Natural sugars and protein',
-    points: 10,
-    dietType: 'vegan',
-    isPremium: false,
-    category: 'business',
-    slug: 'energy-boosting-snack',
-  },
-  {
-    title: 'Magnesium-Rich Dinner',
-    description: 'Leafy greens and whole grains',
-    points: 15,
-    dietType: 'vegetarian',
-    isPremium: false,
-    category: 'mindset',
-    slug: 'magnesium-rich-dinner',
-  },
-  {
-    title: 'Hydration Tracker',
-    description: 'Track your water intake',
-    points: 10,
-    dietType: 'all',
-    isPremium: false,
-    category: 'general',
-    slug: 'hydration-tracker',
-  },
-  {
-    title: 'Brain Food Lunch',
-    description: 'Omega-3 rich foods for focus',
-    points: 15,
-    dietType: 'pescetarian',
-    isPremium: false,
-    category: 'mindset',
-    slug: 'brain-food-lunch',
-  },
-  {
-    title: 'Meal Prep Guide',
-    description: 'Save time with prepared meals',
-    points: 20,
-    dietType: 'pescetarian',
-    isPremium: true,
-    category: 'business',
-    slug: 'meal-prep-guide',
-  },
-];

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const USER_DATA_KEY = '@cyclesync_user_data';
 
-export const saveUserData = async (userData) => {
+export const saveUserData = async (userData: { name: string; lastPeriodDate: string | string[]; cycleLength: number; goals: string[]; totalPoints: number; createdAt: string; completedTasks: {}; }) => {
   try {
     await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
   } catch (error) {
@@ -20,7 +20,7 @@ export const getUserData = async () => {
   }
 };
 
-export const updateUserPoints = async (pointsToAdd) => {
+export const updateUserPoints = async (pointsToAdd: number) => {
   try {
     const userData = await getUserData();
     if (userData) {
@@ -32,7 +32,7 @@ export const updateUserPoints = async (pointsToAdd) => {
   }
 };
 
-export const completeTask = async (taskType) => {
+export const completeTask = async (taskType: string) => {
   try {
     const userData = await getUserData();
     if (userData) {
