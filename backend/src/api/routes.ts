@@ -1,0 +1,82 @@
+import express from 'express'
+import { 
+  getUsersHandler, 
+  getUserByIdHandler, 
+  createUserHandler, 
+  updateUserHandler, 
+  deleteUserHandler 
+} from './user'
+import {
+  getUserCyclesHandler,
+  getCurrentCycleHandler,
+  createCycleHandler,
+  updateCycleHandler,
+  deleteCycleHandler
+} from './cycle'
+import {
+  getAllWorkoutsHandler,
+  getWorkoutByIdHandler,
+  getWorkoutsByPhaseHandler,
+  getAllRecipesHandler,
+  getRecipeByIdHandler,
+  getRecipesByPhaseHandler,
+  getRecipesByDietaryHandler,
+  getAllRecoveryHandler,
+  getRecoveryByIdHandler,
+  getRecoveryByPhaseHandler,
+  getPersonalizedContentHandler
+} from './content'
+import { createUserSchema, updateUserSchema } from '../schema/user.schema'
+import { createCycleSchema, updateCycleSchema } from '../schema/cycle.schema'
+import { 
+  getContentByIdSchema, 
+  getContentByPhaseSchema, 
+  getRecipesByDietarySchema 
+} from '../schema/content.schema'
+import { validateResource } from '../middleware/validateResource'
+
+const router = express.Router()
+
+// Health check route
+router.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  })
+})
+
+// User routes
+router.get('/users', getUsersHandler)
+router.get('/users/:id', getUserByIdHandler)
+router.post('/users', validateResource(createUserSchema), createUserHandler)
+router.put('/users/:id', validateResource(updateUserSchema), updateUserHandler)
+router.delete('/users/:id', deleteUserHandler)
+
+// Cycle routes
+router.get('/users/:userId/cycles', getUserCyclesHandler)
+router.get('/users/:userId/cycles/current', getCurrentCycleHandler)
+router.post('/cycles', validateResource(createCycleSchema), createCycleHandler)
+router.put('/cycles/:id', validateResource(updateCycleSchema), updateCycleHandler)
+router.delete('/cycles/:id', deleteCycleHandler)
+
+// Workout routes
+router.get('/workouts', getAllWorkoutsHandler)
+router.get('/workouts/:id', validateResource(getContentByIdSchema), getWorkoutByIdHandler)
+router.get('/workouts/phase/:phase', validateResource(getContentByPhaseSchema), getWorkoutsByPhaseHandler)
+
+// Recipe routes
+router.get('/recipes', getAllRecipesHandler)
+router.get('/recipes/:id', validateResource(getContentByIdSchema), getRecipeByIdHandler)
+router.get('/recipes/phase/:phase', validateResource(getContentByPhaseSchema), getRecipesByPhaseHandler)
+router.get('/recipes/dietary/:dietary', validateResource(getRecipesByDietarySchema), getRecipesByDietaryHandler)
+
+// Recovery routes
+router.get('/recovery', getAllRecoveryHandler)
+router.get('/recovery/:id', validateResource(getContentByIdSchema), getRecoveryByIdHandler)
+router.get('/recovery/phase/:phase', validateResource(getContentByPhaseSchema), getRecoveryByPhaseHandler)
+
+// Personalized content recommendations
+router.get('/recommendations/:phase', validateResource(getContentByPhaseSchema), getPersonalizedContentHandler)
+
+export default router
