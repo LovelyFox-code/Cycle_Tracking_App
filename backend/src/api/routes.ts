@@ -1,10 +1,10 @@
 import express from 'express'
-import { 
-  getUsersHandler, 
-  getUserByIdHandler, 
-  createUserHandler, 
-  updateUserHandler, 
-  deleteUserHandler 
+import {
+  getUsersHandler,
+  getUserByIdHandler,
+  createUserHandler,
+  updateUserHandler,
+  deleteUserHandler
 } from './user'
 import {
   getUserCyclesHandler,
@@ -26,32 +26,53 @@ import {
   getRecoveryByPhaseHandler,
   getPersonalizedContentHandler
 } from './content'
+import {
+  registerHandler,
+  loginHandler,
+  forgotPasswordHandler,
+  resetPasswordHandler,
+  verifyTokenHandler
+} from './auth'
 import { createUserSchema, updateUserSchema } from '../schema/user.schema'
 import { createCycleSchema, updateCycleSchema } from '../schema/cycle.schema'
-import { 
-  getContentByIdSchema, 
-  getContentByPhaseSchema, 
-  getRecipesByDietarySchema 
+import {
+  getContentByIdSchema,
+  getContentByPhaseSchema,
+  getRecipesByDietarySchema
 } from '../schema/content.schema'
+import {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
+} from '../schema/auth.schema'
 import { validateResource } from '../middleware/validateResource'
+import { authenticateToken } from '../middleware/auth'
 
 const router = express.Router()
 
 // Health check route
 router.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
+  res.status(200).json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   })
 })
 
-// User routes
-router.get('/users', getUsersHandler)
-router.get('/users/:id', getUserByIdHandler)
-router.post('/users', validateResource(createUserSchema), createUserHandler)
-router.put('/users/:id', validateResource(updateUserSchema), updateUserHandler)
-router.delete('/users/:id', deleteUserHandler)
+// Authentication routes
+router.post('/auth/register', validateResource(registerSchema), registerHandler)
+router.post('/auth/login', validateResource(loginSchema), loginHandler)
+router.post('/auth/forgot-password', validateResource(forgotPasswordSchema), forgotPasswordHandler)
+router.post('/auth/reset-password', validateResource(resetPasswordSchema), resetPasswordHandler)
+router.get('/auth/verify', verifyTokenHandler)
+
+// User routes (protected)
+router.get('/users', authenticateToken, getUsersHandler)
+router.get('/users/:id', authenticateToken, getUserByIdHandler)
+router.post('/users', authenticateToken, validateResource(createUserSchema), createUserHandler)
+router.put('/users/:id', authenticateToken, validateResource(updateUserSchema), updateUserHandler)
+router.delete('/users/:id', authenticateToken, deleteUserHandler)
 
 // Cycle routes
 router.get('/users/:userId/cycles', getUserCyclesHandler)

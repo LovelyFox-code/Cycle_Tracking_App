@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { checkOnboardingStatus } from '@/utils/storage';
+import { isAuthenticated } from '@/utils/auth';
 import { router } from 'expo-router';
 import { ShopProvider } from './shop-context';
 import { SearchProvider } from '@/SearchContext';
@@ -34,17 +35,17 @@ import { SearchModal } from '@/components/modals';
 // Create contexts to share filter states across components
 export const NutritionFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (_filter: string) => {},
+  setActiveFilter: (_filter: string) => { },
 });
 
 export const FitnessFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (_filter: string) => {},
+  setActiveFilter: (_filter: string) => { },
 });
 
 export const RecoveryFilterContext = createContext({
   activeFilter: 'all',
-  setActiveFilter: (_filter: string) => {},
+  setActiveFilter: (_filter: string) => { },
 });
 
 // Top Header with Profile and Icons
@@ -144,7 +145,7 @@ function TopNavButtons() {
   // Define buttons based on current path
   let buttons = [];
   let activeFilter = 'all';
-  let handleButtonPress = (_buttonId: string): void => {};
+  let handleButtonPress = (_buttonId: string): void => { };
 
   if (currentPath === '/nutrition') {
     buttons = [
@@ -333,6 +334,12 @@ function AppWithTheme() {
   }, []);
 
   const checkAndRedirect = async () => {
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      router.replace('/auth');
+      return;
+    }
+
     const isOnboarded = await checkOnboardingStatus();
     if (!isOnboarded) {
       router.replace('/onboarding');
@@ -376,6 +383,10 @@ function AppWithTheme() {
               }}
             >
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="auth"
+                options={{ headerShown: false }}
+              />
               <Stack.Screen
                 name="onboarding"
                 options={{ headerShown: false }}

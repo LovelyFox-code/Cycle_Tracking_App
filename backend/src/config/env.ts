@@ -6,7 +6,8 @@ dotenv.config()
 // Required environment variables
 const requiredEnvVars = [
   'SUPABASE_URL',
-  'SUPABASE_ANON_KEY'
+  'SUPABASE_ANON_KEY',
+  'JWT_SECRET'
 ]
 
 // Check for missing environment variables
@@ -20,11 +21,13 @@ if (missingEnvVars.length > 0) {
 // ✅ Log the loaded values (for debugging only)
 console.log('✅ SUPABASE_URL:', process.env.SUPABASE_URL)
 console.log('✅ SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY?.slice(0, 10) + '...')
+console.log('✅ JWT_SECRET:', process.env.JWT_SECRET?.slice(0, 10) + '...')
 
 // Export validated environment variables
 export default {
   port: process.env.PORT || '3001',
   nodeEnv: process.env.NODE_ENV || 'development',
   supabaseUrl: process.env.SUPABASE_URL!,
-  supabaseAnonKey: process.env.SUPABASE_ANON_KEY!
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY!,
+  jwtSecret: process.env.JWT_SECRET!
 }

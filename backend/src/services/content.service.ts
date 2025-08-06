@@ -8,13 +8,13 @@ class ContentService {
   async getAllWorkouts(): Promise<Workout[]> {
     try {
       const { data, error } = await supabase
-        .from('content_workouts')
+        .from('workouts')
         .select('*')
-      
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error('Error in ContentService.getAllWorkouts:', error)
@@ -28,14 +28,14 @@ class ContentService {
   async getWorkoutsByPhase(phase: string): Promise<Workout[]> {
     try {
       const { data, error } = await supabase
-        .from('content_workouts')
+        .from('workouts')
         .select('*')
-        .contains('phase_tags', [phase])
-      
+        .contains('tags', { cyclePhase: phase })
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error(`Error in ContentService.getWorkoutsByPhase(${phase}):`, error)
@@ -49,15 +49,15 @@ class ContentService {
   async getWorkoutById(id: string): Promise<Workout | null> {
     try {
       const { data, error } = await supabase
-        .from('content_workouts')
+        .from('workouts')
         .select('*')
         .eq('id', id)
         .single()
-      
+
       if (error) {
         throw error
       }
-      
+
       return data
     } catch (error) {
       console.error(`Error in ContentService.getWorkoutById(${id}):`, error)
@@ -71,13 +71,13 @@ class ContentService {
   async getAllRecipes(): Promise<Recipe[]> {
     try {
       const { data, error } = await supabase
-        .from('content_recipes')
+        .from('recipes')
         .select('*')
-      
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error('Error in ContentService.getAllRecipes:', error)
@@ -91,14 +91,14 @@ class ContentService {
   async getRecipesByPhase(phase: string): Promise<Recipe[]> {
     try {
       const { data, error } = await supabase
-        .from('content_recipes')
+        .from('recipes')
         .select('*')
-        .contains('phase_tags', [phase])
-      
+        .contains('tags', { cyclePhase: phase })
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error(`Error in ContentService.getRecipesByPhase(${phase}):`, error)
@@ -112,14 +112,14 @@ class ContentService {
   async getRecipesByDietaryPreference(dietary: string): Promise<Recipe[]> {
     try {
       const { data, error } = await supabase
-        .from('content_recipes')
+        .from('recipes')
         .select('*')
-        .contains('dietary_tags', [dietary])
-      
+        .contains('tags', { diet: dietary })
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error(`Error in ContentService.getRecipesByDietaryPreference(${dietary}):`, error)
@@ -133,15 +133,15 @@ class ContentService {
   async getRecipeById(id: string): Promise<Recipe | null> {
     try {
       const { data, error } = await supabase
-        .from('content_recipes')
+        .from('recipes')
         .select('*')
         .eq('id', id)
         .single()
-      
+
       if (error) {
         throw error
       }
-      
+
       return data
     } catch (error) {
       console.error(`Error in ContentService.getRecipeById(${id}):`, error)
@@ -155,13 +155,13 @@ class ContentService {
   async getAllRecovery(): Promise<Recovery[]> {
     try {
       const { data, error } = await supabase
-        .from('content_recovery')
+        .from('recovery_items')
         .select('*')
-      
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error('Error in ContentService.getAllRecovery:', error)
@@ -175,14 +175,14 @@ class ContentService {
   async getRecoveryByPhase(phase: string): Promise<Recovery[]> {
     try {
       const { data, error } = await supabase
-        .from('content_recovery')
+        .from('recovery_items')
         .select('*')
-        .contains('phase_tags', [phase])
-      
+        .contains('tags', { cyclePhase: phase })
+
       if (error) {
         throw error
       }
-      
+
       return data || []
     } catch (error) {
       console.error(`Error in ContentService.getRecoveryByPhase(${phase}):`, error)
@@ -196,15 +196,15 @@ class ContentService {
   async getRecoveryById(id: string): Promise<Recovery | null> {
     try {
       const { data, error } = await supabase
-        .from('content_recovery')
+        .from('recovery_items')
         .select('*')
         .eq('id', id)
         .single()
-      
+
       if (error) {
         throw error
       }
-      
+
       return data
     } catch (error) {
       console.error(`Error in ContentService.getRecoveryById(${id}):`, error)
@@ -224,10 +224,10 @@ class ContentService {
       // Get content for the current phase
       const [workouts, recipes, recovery] = await Promise.all([
         this.getWorkoutsByPhase(phase),
-        dietaryPreference 
-          ? this.getRecipesByDietaryPreference(dietaryPreference).then(recipes => 
-              recipes.filter(recipe => recipe.phase_tags.includes(phase))
-            )
+        dietaryPreference
+          ? this.getRecipesByDietaryPreference(dietaryPreference).then(recipes =>
+            recipes.filter(recipe => recipe.tags?.cyclePhase === phase)
+          )
           : this.getRecipesByPhase(phase),
         this.getRecoveryByPhase(phase)
       ])
